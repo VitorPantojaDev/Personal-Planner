@@ -1,7 +1,7 @@
 // Se já existir uma sessão válida, pula direto para a home,
 // sem obrigar a logar de novo toda vez que abrir a página.
 async function verificarSessaoExistente() {
-    const { data } = await supabase.auth.getSession();
+    const { data } = await supabaseClient.auth.getSession();
     if (data.session) {
         window.location.href = "home.html";
     }
@@ -16,7 +16,7 @@ document.getElementById("form-login").addEventListener("submit", async (evento) 
     const mensagemErro = document.getElementById("mensagem-erro");
     mensagemErro.textContent = "";
  
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
         email: email,
         password: senha
     });

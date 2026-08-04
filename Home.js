@@ -1,7 +1,7 @@
 // Se NÃO existir sessão válida, volta para o login.
 // Isso protege a home de ser acessada sem estar autenticado.
 async function protegerPagina() {
-    const { data } = await supabase.auth.getSession();
+    const { data } = await supabaseClient.auth.getSession();
  
     if (!data.session) {
         window.location.href = "index.html";
@@ -14,7 +14,7 @@ async function protegerPagina() {
 protegerPagina();
  
 document.getElementById("btn-sair").addEventListener("click", async () => {
-    await supabase.auth.signOut();
+    await supabaseClient.auth.signOut();
     window.location.href = "index.html";
 });
  
