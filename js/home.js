@@ -13,84 +13,371 @@ async function protegerPagina() {
 }
 protegerPagina();
 
+// ---------------------------------------------------------------
+// Estado da agenda: qual visão está ativa (dia/semana/mes) e qual
+// data serve de referência para essa visão.
+// ---------------------------------------------------------------
+let visaoAtual = "dia";
+let dataAtual = new Date();
+dataAtual.setHours(0, 0, 0, 0);
+
 // Guarda os compromissos carregados em memória, para poder
 // reabrir o formulário de edição sem precisar consultar o banco de novo.
 let compromissosCache = [];
 
-const listaEl = document.getElementById("lista-compromissos");
+const agendaContainerEl = document.getElementById("agenda-container");
+const rotuloDataEl = document.getElementById("rotulo-data");
 const formularioEl = document.getElementById("formulario-compromisso");
 const formEl = document.getElementById("form-compromisso");
 const formTituloEl = document.getElementById("form-titulo");
 const mensagemErroFormEl = document.getElementById("mensagem-erro-form");
 
-async function carregarCompromissosHoje() {
+// ---------------------------------------------------------------
+// Helpers de data. Evitamos toISOString() para não sofrer com o
+// deslocamento de fuso horário (ele converte para UTC e pode
+// "voltar" um dia dependendo da hora local).
+// ---------------------------------------------------------------
+function formatarDataISO(date) {
+    const ano = date.getFullYear();
+    const mes = String(date.getMonth() + 1).padStart(2, "0");
+    const dia = String(date.getDate()).padStart(2, "0");
+    return `${ano}-${mes}-${dia}`;
+}
 
-    listaEl.innerHTML = "Carregando...";
+function obterInicioSemana(date) {
+    // Semana começando na segunda-feira.
+    const d = new Date(date);
+    const diaSemana = d.getDay(); // 0=Dom, 1=Seg, ..., 6=Sáb
+    const diferenca = diaSemana === 0 ? -6 : 1 - diaSemana;
+    d.setDate(d.getDate() + diferenca);
+    d.setHours(0, 0, 0, 0);
+    return d;
+}
 
-    const hoje = new Date().toISOString().split("T")[0];
+function somarDias(date, quantidade) {
+    const d = new Date(date);
+    d.setDate(d.getDate() + quantidade);
+    return d;
+}
+
+function agruparPorData(compromissos) {
+    const grupos = {};
+    compromissos.forEach((c) => {
+        if (!grupos[c.data]) grupos[c.data] = [];
+        grupos[c.data].push(c);
+    });
+    return grupos;
+}
+
+const NOMES_DIA_SEMANA = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
+const NOMES_MES = [
+    "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+    "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
+];
+
+// ---------------------------------------------------------------
+// Controles de visão e navegação
+// ---------------------------------------------------------------
+document.querySelectorAll(".btn-visao").forEach((botao) => {
+    botao.addEventListener("click", () => {
+        visaoAtual = botao.dataset.visao;
+        renderizarAgenda();
+    });
+});
+
+document.getElementById("btn-anterior").addEventListener("click", () => {
+    navegar(-1);
+});
+
+document.getElementById("btn-proximo").addEventListener("click", () => {
+    navegar(1);
+});
+
+document.getElementById("btn-hoje").addEventListener("click", () => {
+    dataAtual = new Date();
+    dataAtual.setHours(0, 0, 0, 0);
+    renderizarAgenda();
+});
+
+function navegar(direcao) {
+    if (visaoAtual === "dia") {
+        dataAtual = somarDias(dataAtual, direcao);
+    } else if (visaoAtual === "semana") {
+        dataAtual = somarDias(dataAtual, direcao * 7);
+    } else {
+        dataAtual = new Date(dataAtual.getFullYear(), dataAtual.getMonth() + direcao, 1);
+    }
+    renderizarAgenda();
+}
+
+// ---------------------------------------------------------------
+// Renderização principal: decide qual visão desenhar
+// ---------------------------------------------------------------
+async function renderizarAgenda() {
+    document.querySelectorAll(".btn-visao").forEach((botao) => {
+        botao.classList.toggle("ativo", botao.dataset.visao === visaoAtual);
+    });
+
+    if (visaoAtual === "dia") {
+        atualizarRotuloDia();
+        await renderizarDia();
+    } else if (visaoAtual === "semana") {
+        atualizarRotuloSemana();
+        await renderizarSemana();
+    } else {
+        atualizarRotuloMes();
+        await renderizarMes();
+    }
+}
+
+function atualizarRotuloDia() {
+    rotuloDataEl.textContent = dataAtual.toLocaleDateString("pt-BR", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+    });
+}
+
+function atualizarRotuloSemana() {
+    const inicio = obterInicioSemana(dataAtual);
+    const fim = somarDias(inicio, 6);
+    const mesmoMes = inicio.getMonth() === fim.getMonth();
+    if (mesmoMes) {
+        rotuloDataEl.textContent = `${inicio.getDate()} – ${fim.getDate()} de ${NOMES_MES[fim.getMonth()]} de ${fim.getFullYear()}`;
+    } else {
+        rotuloDataEl.textContent = `${inicio.getDate()} de ${NOMES_MES[inicio.getMonth()]} – ${fim.getDate()} de ${NOMES_MES[fim.getMonth()]} de ${fim.getFullYear()}`;
+    }
+}
+
+function atualizarRotuloMes() {
+    rotuloDataEl.textContent = `${NOMES_MES[dataAtual.getMonth()]} de ${dataAtual.getFullYear()}`;
+}
+
+// ---------------------------------------------------------------
+// Visão: DIA
+// ---------------------------------------------------------------
+async function renderizarDia() {
+    agendaContainerEl.innerHTML = "Carregando...";
+
+    const dataISO = formatarDataISO(dataAtual);
 
     const { data, error } = await supabaseClient
         .from("compromissos")
         .select("*")
-        .eq("data", hoje)
+        .eq("data", dataISO)
         .order("hora_inicio", { ascending: true });
 
     if (error) {
-        console.log("ERRO COMPLETO:");
         console.log(error);
-
-        listaEl.innerHTML = "Erro ao carregar compromissos.";
-
+        agendaContainerEl.innerHTML = "Erro ao carregar compromissos.";
         return;
     }
 
     compromissosCache = data;
 
     if (data.length === 0) {
-        listaEl.innerHTML = "Nenhum compromisso hoje.";
+        agendaContainerEl.innerHTML = '<p class="agenda-vazio">Nenhum compromisso neste dia.</p>';
         return;
     }
 
-    listaEl.innerHTML = "";
+    const lista = document.createElement("div");
+    lista.id = "lista-compromissos";
 
-    data.forEach(compromisso => {
-
-        const item = document.createElement("div");
-        item.className = "item-compromisso";
-
-        item.innerHTML = `
-            <strong>${compromisso.hora_inicio ?? "sem horário"}</strong>
-            - ${compromisso.titulo}
-            ${compromisso.categoria ? `<em>(${compromisso.categoria})</em>` : ""}
-            <button type="button" class="btn-editar" data-id="${compromisso.id}">Editar</button>
-            <button type="button" class="btn-excluir" data-id="${compromisso.id}">Excluir</button>
-        `;
-
-        listaEl.appendChild(item);
-
+    data.forEach((compromisso) => {
+        lista.appendChild(criarItemCompromisso(compromisso));
     });
 
+    agendaContainerEl.innerHTML = "";
+    agendaContainerEl.appendChild(lista);
 }
 
-carregarCompromissosHoje();
+function criarItemCompromisso(compromisso) {
+    const item = document.createElement("div");
+    item.className = "item-compromisso";
+    item.innerHTML = `
+        <strong>${compromisso.hora_inicio ?? "sem horário"}</strong>
+        - ${compromisso.titulo}
+        ${compromisso.categoria ? `<em>(${compromisso.categoria})</em>` : ""}
+        <button type="button" class="btn-editar" data-id="${compromisso.id}">Editar</button>
+        <button type="button" class="btn-excluir" data-id="${compromisso.id}">Excluir</button>
+    `;
+    return item;
+}
 
-// Delegação de evento: como os botões de editar/excluir são recriados
-// a cada carregamento da lista, o listener fica no elemento pai (lista),
-// que sempre existe, em vez de um listener por botão.
-listaEl.addEventListener("click", (evento) => {
-    const id = evento.target.dataset.id;
-    if (!id) return;
+// ---------------------------------------------------------------
+// Visão: SEMANA
+// ---------------------------------------------------------------
+async function renderizarSemana() {
+    agendaContainerEl.innerHTML = "Carregando...";
 
-    if (evento.target.classList.contains("btn-editar")) {
-        const compromisso = compromissosCache.find(c => c.id === id);
-        if (compromisso) abrirFormulario(compromisso);
+    const inicio = obterInicioSemana(dataAtual);
+    const fim = somarDias(inicio, 6);
+
+    const { data, error } = await supabaseClient
+        .from("compromissos")
+        .select("*")
+        .gte("data", formatarDataISO(inicio))
+        .lte("data", formatarDataISO(fim))
+        .order("hora_inicio", { ascending: true });
+
+    if (error) {
+        console.log(error);
+        agendaContainerEl.innerHTML = "Erro ao carregar compromissos.";
+        return;
     }
 
-    if (evento.target.classList.contains("btn-excluir")) {
-        excluirCompromisso(id);
+    compromissosCache = data;
+    const porData = agruparPorData(data);
+    const hojeISO = formatarDataISO(new Date());
+
+    const grade = document.createElement("div");
+    grade.id = "grade-semana";
+
+    for (let i = 0; i < 7; i++) {
+        const diaData = somarDias(inicio, i);
+        const diaISO = formatarDataISO(diaData);
+        const compromissosDoDia = porData[diaISO] || [];
+
+        const coluna = document.createElement("div");
+        coluna.className = "coluna-semana";
+        if (diaISO === hojeISO) coluna.classList.add("coluna-hoje");
+
+        const cabecalho = document.createElement("div");
+        cabecalho.className = "cabecalho-coluna-semana";
+        cabecalho.textContent = `${NOMES_DIA_SEMANA[i]} ${diaData.getDate()}`;
+        coluna.appendChild(cabecalho);
+
+        if (compromissosDoDia.length === 0) {
+            const vazio = document.createElement("div");
+            vazio.className = "semana-vazio";
+            vazio.textContent = "—";
+            coluna.appendChild(vazio);
+        } else {
+            compromissosDoDia.forEach((compromisso) => {
+                const item = document.createElement("div");
+                item.className = "item-semana";
+                item.dataset.id = compromisso.id;
+                item.innerHTML = `<strong>${compromisso.hora_inicio ?? ""}</strong> ${compromisso.titulo}`;
+                coluna.appendChild(item);
+            });
+        }
+
+        grade.appendChild(coluna);
+    }
+
+    agendaContainerEl.innerHTML = "";
+    agendaContainerEl.appendChild(grade);
+}
+
+// ---------------------------------------------------------------
+// Visão: MÊS
+// ---------------------------------------------------------------
+async function renderizarMes() {
+    agendaContainerEl.innerHTML = "Carregando...";
+
+    const ano = dataAtual.getFullYear();
+    const mes = dataAtual.getMonth();
+    const primeiroDia = new Date(ano, mes, 1);
+    const ultimoDia = new Date(ano, mes + 1, 0);
+
+    const { data, error } = await supabaseClient
+        .from("compromissos")
+        .select("*")
+        .gte("data", formatarDataISO(primeiroDia))
+        .lte("data", formatarDataISO(ultimoDia));
+
+    if (error) {
+        console.log(error);
+        agendaContainerEl.innerHTML = "Erro ao carregar compromissos.";
+        return;
+    }
+
+    compromissosCache = data;
+    const porData = agruparPorData(data);
+    const hojeISO = formatarDataISO(new Date());
+
+    // Segunda-feira = 0 no nosso layout, então convertemos o getDay() padrão.
+    const offsetInicio = (primeiroDia.getDay() + 6) % 7;
+
+    const grade = document.createElement("div");
+    grade.id = "grade-mes";
+
+    NOMES_DIA_SEMANA.forEach((nome) => {
+        const cabecalho = document.createElement("div");
+        cabecalho.className = "cabecalho-coluna-mes";
+        cabecalho.textContent = nome;
+        grade.appendChild(cabecalho);
+    });
+
+    for (let i = 0; i < offsetInicio; i++) {
+        const vazio = document.createElement("div");
+        vazio.className = "celula-mes celula-mes-vazia";
+        grade.appendChild(vazio);
+    }
+
+    for (let dia = 1; dia <= ultimoDia.getDate(); dia++) {
+        const diaData = new Date(ano, mes, dia);
+        const diaISO = formatarDataISO(diaData);
+        const temCompromisso = !!porData[diaISO];
+
+        const celula = document.createElement("div");
+        celula.className = "celula-mes";
+        if (diaISO === hojeISO) celula.classList.add("celula-hoje");
+        celula.dataset.data = diaISO;
+
+        celula.innerHTML = `
+            <span class="numero-dia">${dia}</span>
+            ${temCompromisso ? '<span class="indicador-compromisso"></span>' : ""}
+        `;
+
+        grade.appendChild(celula);
+    }
+
+    agendaContainerEl.innerHTML = "";
+    agendaContainerEl.appendChild(grade);
+}
+
+// ---------------------------------------------------------------
+// Cliques dentro da agenda (delegação de evento, já que o
+// conteúdo é recriado a cada renderização)
+// ---------------------------------------------------------------
+agendaContainerEl.addEventListener("click", (evento) => {
+    // Editar/excluir (visão dia)
+    const idEditar = evento.target.closest(".btn-editar")?.dataset.id;
+    if (idEditar) {
+        const compromisso = compromissosCache.find((c) => c.id === idEditar);
+        if (compromisso) abrirFormulario(compromisso);
+        return;
+    }
+
+    const idExcluir = evento.target.closest(".btn-excluir")?.dataset.id;
+    if (idExcluir) {
+        excluirCompromisso(idExcluir);
+        return;
+    }
+
+    // Clique num compromisso na visão semana → abre para editar
+    const itemSemana = evento.target.closest(".item-semana");
+    if (itemSemana) {
+        const compromisso = compromissosCache.find((c) => c.id === itemSemana.dataset.id);
+        if (compromisso) abrirFormulario(compromisso);
+        return;
+    }
+
+    // Clique num dia na visão mês → pula para a visão dia daquela data
+    const celulaMes = evento.target.closest(".celula-mes:not(.celula-mes-vazia)");
+    if (celulaMes) {
+        const [ano, mes, dia] = celulaMes.dataset.data.split("-").map(Number);
+        dataAtual = new Date(ano, mes - 1, dia);
+        visaoAtual = "dia";
+        renderizarAgenda();
     }
 });
 
+// ---------------------------------------------------------------
+// Formulário de criar/editar compromisso
+// ---------------------------------------------------------------
 function abrirFormulario(compromisso = null) {
     mensagemErroFormEl.textContent = "";
     formEl.reset();
@@ -107,11 +394,12 @@ function abrirFormulario(compromisso = null) {
     } else {
         formTituloEl.textContent = "Novo compromisso";
         document.getElementById("compromisso-id").value = "";
-        // Sugere a data de hoje como padrão para um novo compromisso
-        document.getElementById("data").value = new Date().toISOString().split("T")[0];
+        // Sugere a data que está sendo visualizada como padrão
+        document.getElementById("data").value = formatarDataISO(dataAtual);
     }
 
     formularioEl.style.display = "block";
+    formularioEl.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
 function fecharFormulario() {
@@ -169,7 +457,7 @@ formEl.addEventListener("submit", async (evento) => {
     }
 
     fecharFormulario();
-    carregarCompromissosHoje();
+    renderizarAgenda();
 });
 
 async function excluirCompromisso(id) {
@@ -187,10 +475,15 @@ async function excluirCompromisso(id) {
         return;
     }
 
-    carregarCompromissosHoje();
+    renderizarAgenda();
 }
 
 document.getElementById("btn-sair").addEventListener("click", async () => {
     await supabaseClient.auth.signOut();
     window.location.href = "index.html";
 });
+
+// ---------------------------------------------------------------
+// Primeira renderização
+// ---------------------------------------------------------------
+renderizarAgenda();

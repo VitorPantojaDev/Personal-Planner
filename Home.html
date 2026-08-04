@@ -11,9 +11,24 @@
 
     <hr>
 
-    <h2>Agenda de Hoje</h2>
+    <h2>Agenda</h2>
 
-    <div id="lista-compromissos">
+    <div id="controles-agenda">
+        <div id="seletor-visao">
+            <button type="button" class="btn-visao" data-visao="dia">Dia</button>
+            <button type="button" class="btn-visao" data-visao="semana">Semana</button>
+            <button type="button" class="btn-visao" data-visao="mes">Mês</button>
+        </div>
+
+        <div id="navegacao-data">
+            <button type="button" id="btn-anterior" aria-label="Período anterior">&lsaquo;</button>
+            <span id="rotulo-data"></span>
+            <button type="button" id="btn-proximo" aria-label="Próximo período">&rsaquo;</button>
+            <button type="button" id="btn-hoje">Hoje</button>
+        </div>
+    </div>
+
+    <div id="agenda-container">
         Carregando compromissos...
     </div>
 
