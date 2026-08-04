@@ -8,12 +8,71 @@
 <body>
     <h1>Bem-vindo(a)!</h1>
     <p id="email-usuario"></p>
+
+    <hr>
+
+    <h2>Agenda de Hoje</h2>
+
+    <div id="lista-compromissos">
+        Carregando compromissos...
+    </div>
+
+    <br>
+
+    <button id="btn-novo-compromisso">
+        Novo compromisso
+    </button>
+
+    <div id="formulario-compromisso" style="display:none;">
+        <h3 id="form-titulo">Novo compromisso</h3>
+
+        <form id="form-compromisso">
+            <input type="hidden" id="compromisso-id">
+
+            <div>
+                <label for="titulo">Título:</label>
+                <input type="text" id="titulo" required>
+            </div>
+
+            <div>
+                <label for="descricao">Descrição:</label>
+                <textarea id="descricao"></textarea>
+            </div>
+
+            <div>
+                <label for="data">Data:</label>
+                <input type="date" id="data" required>
+            </div>
+
+            <div>
+                <label for="hora_inicio">Hora início:</label>
+                <input type="time" id="hora_inicio">
+            </div>
+
+            <div>
+                <label for="hora_fim">Hora fim:</label>
+                <input type="time" id="hora_fim">
+            </div>
+
+            <div>
+                <label for="categoria">Categoria:</label>
+                <input type="text" id="categoria" placeholder="pessoal, faculdade, trabalho...">
+            </div>
+
+            <button type="submit" id="btn-salvar-compromisso">Salvar</button>
+            <button type="button" id="btn-cancelar-compromisso">Cancelar</button>
+        </form>
+
+        <p id="mensagem-erro-form" style="color: red;"></p>
+    </div>
+
+    <hr>
  
     <button id="btn-sair">Sair</button>
  
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabaseClient.js"></script>
-    <script src="home.js"></script>
+    <script src="js/supabaseClient.js"></script>
+    <script src="js/home.js"></script>
 </body>
 </html>
  
