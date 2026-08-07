@@ -41,3 +41,134 @@ body {
 button {
     cursor: pointer;
 }
+
+.agenda-vazio {
+    color: #888;
+    font-style: italic;
+}
+
+/* Seletor de visão (Dia / Semana / Mês) */
+#seletor-visao {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.btn-visao {
+    flex: 1;
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: #f2f2f2;
+}
+
+.btn-visao.ativo {
+    background: #2c5f8a;
+    color: white;
+    border-color: #2c5f8a;
+}
+
+/* Navegação de data (< Hoje >) */
+#navegacao-data {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+#rotulo-data {
+    font-weight: bold;
+    text-align: center;
+    flex: 1;
+}
+
+/* Visão SEMANA */
+#grade-semana {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+}
+
+.coluna-semana {
+    border: 1px solid #eee;
+    border-radius: 4px;
+    padding: 4px;
+    min-height: 80px;
+    font-size: 0.8em;
+}
+
+.coluna-hoje {
+    background: #eaf2fb;
+    border-color: #2c5f8a;
+}
+
+.cabecalho-coluna-semana {
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 4px;
+    font-size: 0.85em;
+}
+
+.item-semana {
+    background: #f5f8fa;
+    border-radius: 3px;
+    padding: 2px 4px;
+    margin-bottom: 2px;
+    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.semana-vazio {
+    text-align: center;
+    color: #ccc;
+}
+
+/* Visão MÊS */
+#grade-mes {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+}
+
+.cabecalho-coluna-mes {
+    font-weight: bold;
+    text-align: center;
+    font-size: 0.8em;
+    padding-bottom: 4px;
+}
+
+.celula-mes {
+    aspect-ratio: 1;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    padding: 4px;
+    cursor: pointer;
+    position: relative;
+    font-size: 0.85em;
+}
+
+.celula-mes-vazia {
+    border: none;
+    cursor: default;
+}
+
+.celula-hoje {
+    background: #eaf2fb;
+    border-color: #2c5f8a;
+}
+
+.numero-dia {
+    display: block;
+}
+
+.indicador-compromisso {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #2c5f8a;
+}
