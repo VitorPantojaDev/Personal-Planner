@@ -1,2 +1,95 @@
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="app.js"></script>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Planner</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+ 
+    <!-- TELA DE LOGIN -->
+    <section id="tela-login">
+        <h1>Personal Planner</h1>
+        <form id="form-login">
+            <div>
+                <label for="email">E-mail:</label>
+                <input type="email" id="email" required placeholder="seu@email.com">
+            </div>
+            <div>
+                <label for="senha">Senha:</label>
+                <input type="password" id="senha" required placeholder="Digite sua senha">
+            </div>
+            <button type="submit">Entrar</button>
+        </form>
+        <p id="login-erro" class="erro"></p>
+    </section>
+ 
+    <!-- APP PRINCIPAL (só aparece logado) -->
+    <section id="tela-app" class="oculto">
+ 
+        <header>
+            <span id="usuario-logado"></span>
+            <button id="btn-sair">Sair</button>
+        </header>
+ 
+        <nav id="menu-abas">
+            <button class="aba-btn ativa" data-aba="agenda">Agenda</button>
+            <button class="aba-btn" data-aba="estudos">Estudos</button>
+            <button class="aba-btn" data-aba="contatos">Contatos</button>
+        </nav>
+ 
+        <!-- ABA AGENDA -->
+        <div id="aba-agenda" class="aba-conteudo">
+            <div id="agenda-navegacao">
+                <button id="dia-anterior">&larr;</button>
+                <span id="agenda-data-atual"></span>
+                <button id="proximo-dia">&rarr;</button>
+            </div>
+ 
+            <ul id="lista-compromissos"></ul>
+ 
+            <h3>Novo compromisso</h3>
+            <form id="form-compromisso">
+                <input type="hidden" id="compromisso-id">
+                <div>
+                    <label for="titulo">Título:</label>
+                    <input type="text" id="titulo" required>
+                </div>
+                <div>
+                    <label for="descricao">Descrição:</label>
+                    <input type="text" id="descricao">
+                </div>
+                <div>
+                    <label for="hora-inicio">Início:</label>
+                    <input type="time" id="hora-inicio">
+                </div>
+                <div>
+                    <label for="hora-fim">Fim:</label>
+                    <input type="time" id="hora-fim">
+                </div>
+                <div>
+                    <label for="categoria">Categoria:</label>
+                    <input type="text" id="categoria" placeholder="pessoal, faculdade...">
+                </div>
+                <button type="submit" id="btn-salvar-compromisso">Salvar</button>
+                <button type="button" id="btn-cancelar-edicao" class="oculto">Cancelar edição</button>
+            </form>
+        </div>
+ 
+        <!-- ABA ESTUDOS (placeholder, próxima etapa) -->
+        <div id="aba-estudos" class="aba-conteudo oculto">
+            <p>Em breve.</p>
+        </div>
+ 
+        <!-- ABA CONTATOS (placeholder, próxima etapa) -->
+        <div id="aba-contatos" class="aba-conteudo oculto">
+            <p>Em breve.</p>
+        </div>
+ 
+    </section>
+ 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
+</body>
+</html>
