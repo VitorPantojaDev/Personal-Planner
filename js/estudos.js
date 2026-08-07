@@ -1,0 +1,304 @@
+// Protege a página: sem sessão válida, volta para o login.
+async function protegerPagina() {
+    const { data } = await supabaseClient.auth.getSession();
+    if (!data.session) {
+        window.location.href = "index.html";
+        return;
+    }
+    document.getElementById("email-usuario").textContent =
+        "Logado como: " + data.session.user.email;
+}
+protegerPagina();
+
+// ---------------------------------------------------------------
+// Elementos
+// ---------------------------------------------------------------
+const listaCursosEl = document.getElementById("lista-cursos");
+
+const formularioCursoEl = document.getElementById("formulario-curso");
+const formCursoEl = document.getElementById("form-curso");
+const formCursoTituloEl = document.getElementById("form-curso-titulo");
+const mensagemErroCursoEl = document.getElementById("mensagem-erro-curso");
+
+const formularioSessaoEl = document.getElementById("formulario-sessao");
+const formSessaoEl = document.getElementById("form-sessao");
+const mensagemErroSessaoEl = document.getElementById("mensagem-erro-sessao");
+
+let cursosCache = [];
+
+// ---------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------
+function formatarDataISO(date) {
+    const ano = date.getFullYear();
+    const mes = String(date.getMonth() + 1).padStart(2, "0");
+    const dia = String(date.getDate()).padStart(2, "0");
+    return `${ano}-${mes}-${dia}`;
+}
+
+// Calcula horas restantes, dias restantes e horas/dia necessárias
+// a partir dos dados brutos do curso — nunca armazenado no banco,
+// sempre recalculado na hora de exibir.
+function calcularProgresso(curso) {
+    const horasRestantes = Math.max(0, curso.carga_horaria_total - curso.horas_estudadas);
+    const percentual = curso.carga_horaria_total > 0
+        ? Math.min(100, (curso.horas_estudadas / curso.carga_horaria_total) * 100)
+        : 0;
+
+    if (!curso.data_limite) {
+        return { horasRestantes, percentual, horasPorDia: null, status: "sem-prazo" };
+    }
+
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    const limite = new Date(curso.data_limite + "T00:00:00");
+    const diffMs = limite - hoje;
+    const diasRestantes = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+    if (horasRestantes <= 0) {
+        return { horasRestantes: 0, percentual: 100, horasPorDia: 0, status: "concluido" };
+    }
+
+    if (diasRestantes <= 0) {
+        return { horasRestantes, percentual, horasPorDia: null, status: "vencido" };
+    }
+
+    const horasPorDia = horasRestantes / diasRestantes;
+    let status = "ok";
+    if (horasPorDia > 4) status = "urgente";
+    else if (horasPorDia > 2) status = "atencao";
+
+    return { horasRestantes, percentual, horasPorDia, diasRestantes, status };
+}
+
+// ---------------------------------------------------------------
+// Carregar e renderizar cursos
+// ---------------------------------------------------------------
+async function carregarCursos() {
+    listaCursosEl.innerHTML = "Carregando...";
+
+    const { data, error } = await supabaseClient
+        .from("cursos")
+        .select("*")
+        .eq("ativo", true)
+        .order("data_limite", { ascending: true, nullsFirst: false });
+
+    if (error) {
+        console.log(error);
+        listaCursosEl.innerHTML = "Erro ao carregar cursos.";
+        return;
+    }
+
+    cursosCache = data;
+    renderizarCursos(data);
+}
+
+function renderizarCursos(cursos) {
+    if (cursos.length === 0) {
+        listaCursosEl.innerHTML = '<p class="agenda-vazio">Nenhum curso cadastrado.</p>';
+        return;
+    }
+
+    listaCursosEl.innerHTML = "";
+
+    cursos.forEach((curso) => {
+        const progresso = calcularProgresso(curso);
+
+        const card = document.createElement("div");
+        card.className = "card-curso status-" + progresso.status;
+
+        let linhaMeta;
+        if (progresso.status === "concluido") {
+            linhaMeta = "Meta concluída.";
+        } else if (progresso.status === "vencido") {
+            linhaMeta = "Prazo vencido, ainda faltam " + progresso.horasRestantes.toFixed(1) + "h.";
+        } else if (progresso.status === "sem-prazo") {
+            linhaMeta = "Sem data limite definida.";
+        } else {
+            linhaMeta = `Faltam ${progresso.horasRestantes.toFixed(1)}h em ${progresso.diasRestantes} dia(s) — `
+                + `<strong>${progresso.horasPorDia.toFixed(1)}h/dia</strong>`;
+        }
+
+        card.innerHTML = `
+            <div class="card-curso-cabecalho">
+                <strong>${curso.nome}</strong>
+                <span class="curso-horas">${curso.horas_estudadas.toFixed(1)} / ${curso.carga_horaria_total}h</span>
+            </div>
+            <div class="barra-progresso">
+                <div class="barra-progresso-preenchida" style="width: ${progresso.percentual}%;"></div>
+            </div>
+            <div class="card-curso-meta">${linhaMeta}</div>
+            <div class="card-curso-acoes">
+                <button type="button" class="btn-registrar-sessao" data-id="${curso.id}">Registrar sessão</button>
+                <button type="button" class="btn-editar-curso" data-id="${curso.id}">Editar</button>
+                <button type="button" class="btn-excluir-curso" data-id="${curso.id}">Excluir</button>
+            </div>
+        `;
+
+        listaCursosEl.appendChild(card);
+    });
+}
+
+listaCursosEl.addEventListener("click", (evento) => {
+    const idSessao = evento.target.closest(".btn-registrar-sessao")?.dataset.id;
+    if (idSessao) {
+        abrirFormularioSessao(idSessao);
+        return;
+    }
+
+    const idEditar = evento.target.closest(".btn-editar-curso")?.dataset.id;
+    if (idEditar) {
+        const curso = cursosCache.find((c) => c.id === idEditar);
+        if (curso) abrirFormularioCurso(curso);
+        return;
+    }
+
+    const idExcluir = evento.target.closest(".btn-excluir-curso")?.dataset.id;
+    if (idExcluir) {
+        excluirCurso(idExcluir);
+        return;
+    }
+});
+
+// ---------------------------------------------------------------
+// Criar / Editar curso
+// ---------------------------------------------------------------
+document.getElementById("btn-novo-curso").addEventListener("click", () => {
+    abrirFormularioCurso();
+});
+
+document.getElementById("btn-cancelar-curso").addEventListener("click", fecharFormularioCurso);
+
+function abrirFormularioCurso(curso = null) {
+    mensagemErroCursoEl.textContent = "";
+    formCursoEl.reset();
+
+    if (curso) {
+        formCursoTituloEl.textContent = "Editar curso";
+        document.getElementById("curso-id").value = curso.id;
+        document.getElementById("curso-nome").value = curso.nome;
+        document.getElementById("curso-carga-total").value = curso.carga_horaria_total;
+        document.getElementById("curso-data-limite").value = curso.data_limite || "";
+    } else {
+        formCursoTituloEl.textContent = "Novo curso";
+        document.getElementById("curso-id").value = "";
+    }
+
+    formularioCursoEl.style.display = "block";
+    formularioCursoEl.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+function fecharFormularioCurso() {
+    formularioCursoEl.style.display = "none";
+    formCursoEl.reset();
+    mensagemErroCursoEl.textContent = "";
+}
+
+formCursoEl.addEventListener("submit", async (evento) => {
+    evento.preventDefault();
+    mensagemErroCursoEl.textContent = "";
+
+    const id = document.getElementById("curso-id").value;
+
+    const dadosCurso = {
+        nome: document.getElementById("curso-nome").value,
+        carga_horaria_total: parseFloat(document.getElementById("curso-carga-total").value),
+        data_limite: document.getElementById("curso-data-limite").value || null
+    };
+
+    let resultado;
+    if (id) {
+        resultado = await supabaseClient.from("cursos").update(dadosCurso).eq("id", id);
+    } else {
+        resultado = await supabaseClient.from("cursos").insert(dadosCurso);
+    }
+
+    if (resultado.error) {
+        mensagemErroCursoEl.textContent = "Erro ao salvar: " + resultado.error.message;
+        return;
+    }
+
+    fecharFormularioCurso();
+    carregarCursos();
+});
+
+async function excluirCurso(id) {
+    const confirmar = confirm("Excluir este curso? As sessões de estudo registradas também serão apagadas.");
+    if (!confirmar) return;
+
+    const { error } = await supabaseClient.from("cursos").delete().eq("id", id);
+
+    if (error) {
+        alert("Erro ao excluir: " + error.message);
+        return;
+    }
+
+    carregarCursos();
+}
+
+// ---------------------------------------------------------------
+// Registrar sessão de estudo
+// ---------------------------------------------------------------
+function abrirFormularioSessao(cursoId) {
+    mensagemErroSessaoEl.textContent = "";
+    formSessaoEl.reset();
+    document.getElementById("sessao-curso-id").value = cursoId;
+    document.getElementById("sessao-data").value = formatarDataISO(new Date());
+
+    formularioSessaoEl.style.display = "block";
+    formularioSessaoEl.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+document.getElementById("btn-cancelar-sessao").addEventListener("click", () => {
+    formularioSessaoEl.style.display = "none";
+    formSessaoEl.reset();
+    mensagemErroSessaoEl.textContent = "";
+});
+
+formSessaoEl.addEventListener("submit", async (evento) => {
+    evento.preventDefault();
+    mensagemErroSessaoEl.textContent = "";
+
+    const cursoId = document.getElementById("sessao-curso-id").value;
+    const horas = parseFloat(document.getElementById("sessao-horas").value);
+
+    const dadosSessao = {
+        curso_id: cursoId,
+        data: document.getElementById("sessao-data").value,
+        horas: horas,
+        observacao: document.getElementById("sessao-observacao").value || null
+    };
+
+    const { error: erroSessao } = await supabaseClient.from("sessoes_estudo").insert(dadosSessao);
+
+    if (erroSessao) {
+        mensagemErroSessaoEl.textContent = "Erro ao registrar: " + erroSessao.message;
+        return;
+    }
+
+    // Atualiza o acumulado de horas estudadas do curso.
+    const curso = cursosCache.find((c) => c.id === cursoId);
+    const novoTotal = (curso ? curso.horas_estudadas : 0) + horas;
+
+    const { error: erroCurso } = await supabaseClient
+        .from("cursos")
+        .update({ horas_estudadas: novoTotal })
+        .eq("id", cursoId);
+
+    if (erroCurso) {
+        mensagemErroSessaoEl.textContent = "Sessão registrada, mas houve erro ao atualizar o total: " + erroCurso.message;
+        return;
+    }
+
+    formularioSessaoEl.style.display = "none";
+    formSessaoEl.reset();
+    carregarCursos();
+});
+
+// ---------------------------------------------------------------
+document.getElementById("btn-sair").addEventListener("click", async () => {
+    await supabaseClient.auth.signOut();
+    window.location.href = "index.html";
+});
+
+carregarCursos();

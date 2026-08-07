@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estudos</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Estudos</h1>
+    <p id="email-usuario"></p>
+
+    <nav id="menu-principal">
+        <a href="home.html">Agenda</a>
+        <span>Estudos</span>
+    </nav>
+
+    <hr>
+
+    <div id="lista-cursos">Carregando cursos...</div>
+
+    <br>
+
+    <button id="btn-novo-curso">Novo curso</button>
+
+    <div id="formulario-curso" style="display:none;">
+        <h3 id="form-curso-titulo">Novo curso</h3>
+
+        <form id="form-curso">
+            <input type="hidden" id="curso-id">
+
+            <div>
+                <label for="curso-nome">Nome:</label>
+                <input type="text" id="curso-nome" required>
+            </div>
+
+            <div>
+                <label for="curso-carga-total">Carga horária total (horas):</label>
+                <input type="number" id="curso-carga-total" min="0" step="0.5" required>
+            </div>
+
+            <div>
+                <label for="curso-data-limite">Data limite:</label>
+                <input type="date" id="curso-data-limite">
+            </div>
+
+            <button type="submit">Salvar</button>
+            <button type="button" id="btn-cancelar-curso">Cancelar</button>
+        </form>
+
+        <p id="mensagem-erro-curso" style="color: red;"></p>
+    </div>
+
+    <div id="formulario-sessao" style="display:none;">
+        <h3>Registrar sessão de estudo</h3>
+
+        <form id="form-sessao">
+            <input type="hidden" id="sessao-curso-id">
+
+            <div>
+                <label for="sessao-horas">Horas estudadas:</label>
+                <input type="number" id="sessao-horas" min="0.1" step="0.1" required>
+            </div>
+
+            <div>
+                <label for="sessao-data">Data:</label>
+                <input type="date" id="sessao-data" required>
+            </div>
+
+            <div>
+                <label for="sessao-observacao">Observação:</label>
+                <input type="text" id="sessao-observacao">
+            </div>
+
+            <button type="submit">Registrar</button>
+            <button type="button" id="btn-cancelar-sessao">Cancelar</button>
+        </form>
+
+        <p id="mensagem-erro-sessao" style="color: red;"></p>
+    </div>
+
+    <hr>
+
+    <button id="btn-sair">Sair</button>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabaseClient.js"></script>
+    <script src="js/estudos.js"></script>
+</body>
+</html>
