@@ -96,6 +96,32 @@
                 </select>
             </div>
 
+            <div id="compromisso-recorrencia-linha">
+                <label class="repetir-checkbox-linha">
+                    <input type="checkbox" id="repetir-compromisso">
+                    Repetir
+                </label>
+
+                <div id="repetir-opcoes" style="display:none;">
+                    <p class="repetir-dica">Marque os dias em que se repete (ex.: só Segunda = toda semana; Segunda a Sábado = quase diário).</p>
+
+                    <div id="repetir-dias-semana">
+                        <label><input type="checkbox" class="dia-semana-check" value="0"> Dom</label>
+                        <label><input type="checkbox" class="dia-semana-check" value="1"> Seg</label>
+                        <label><input type="checkbox" class="dia-semana-check" value="2"> Ter</label>
+                        <label><input type="checkbox" class="dia-semana-check" value="3"> Qua</label>
+                        <label><input type="checkbox" class="dia-semana-check" value="4"> Qui</label>
+                        <label><input type="checkbox" class="dia-semana-check" value="5"> Sex</label>
+                        <label><input type="checkbox" class="dia-semana-check" value="6"> Sáb</label>
+                    </div>
+
+                    <div>
+                        <label for="repetir-ate">Repetir até:</label>
+                        <input type="date" id="repetir-ate">
+                    </div>
+                </div>
+            </div>
+
             <button type="submit" id="btn-salvar-compromisso">Salvar</button>
             <button type="button" id="btn-cancelar-compromisso">Cancelar</button>
         </form>
