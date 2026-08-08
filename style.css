@@ -744,3 +744,42 @@ button:active {
         padding: 3px;
     }
 }
+
+/* ---------- Repetição de compromissos ---------- */
+.repetir-checkbox-linha {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: normal;
+    margin-bottom: 8px;
+}
+ 
+#repetir-opcoes {
+    border: 1px dashed #ccc;
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+ 
+.repetir-dica {
+    font-size: 0.8em;
+    color: #777;
+    margin: 0 0 8px 0;
+}
+ 
+#repetir-dias-semana {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+ 
+#repetir-dias-semana label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.85em;
+    font-weight: normal;
+    margin: 0;
+}
+ 
