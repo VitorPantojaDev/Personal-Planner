@@ -783,3 +783,20 @@ button:active {
     margin: 0;
 }
  
+/* Versão reforçada: sobrepõe qualquer regra genérica de input do tema */
+#formulario-compromisso input[type="checkbox"] {
+    width: 18px !important;
+    height: 18px !important;
+    display: inline-block !important;
+    flex: 0 0 auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#formulario-compromisso label.repetir-checkbox-linha {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 6px !important;
+    width: auto !important;
+}
