@@ -414,10 +414,16 @@ function abrirFormulario(compromisso = null) {
         document.getElementById("hora_inicio").value = compromisso.hora_inicio ?? "";
         document.getElementById("hora_fim").value = compromisso.hora_fim ?? "";
         document.getElementById("categoria").value = compromisso.categoria ?? "";
+        // Repetição só se aplica ao criar; esta ocorrência já existe sozinha.
+        document.getElementById("compromisso-recorrencia-linha").style.display = "none";
     } else {
         formTituloEl.textContent = "Novo compromisso";
         document.getElementById("compromisso-id").value = "";
         document.getElementById("compromisso-contato").value = "";
+        document.getElementById("compromisso-recorrencia-linha").style.display = "block";
+        document.getElementById("repetir-compromisso").checked = false;
+        document.getElementById("repetir-opcoes").style.display = "none";
+        document.querySelectorAll(".dia-semana-check").forEach((cb) => (cb.checked = false));
         // Sugere a data que está sendo visualizada como padrão
         document.getElementById("data").value = formatarDataISO(dataAtual);
     }
@@ -440,17 +446,33 @@ document.getElementById("btn-cancelar-compromisso").addEventListener("click", ()
     fecharFormulario();
 });
 
+document.getElementById("repetir-compromisso").addEventListener("change", (evento) => {
+    document.getElementById("repetir-opcoes").style.display = evento.target.checked ? "block" : "none";
+
+    if (evento.target.checked) {
+        // Pré-marca o dia da semana da data já escolhida (ex.: se a data
+        // é uma segunda-feira, já marca "Seg" — cobre o caso "toda segunda").
+        const dataValor = document.getElementById("data").value;
+        if (dataValor) {
+            const [ano, mes, dia] = dataValor.split("-").map(Number);
+            const diaSemana = new Date(ano, mes - 1, dia).getDay();
+            const checkbox = document.querySelector(`.dia-semana-check[value="${diaSemana}"]`);
+            if (checkbox) checkbox.checked = true;
+        }
+    }
+});
+
 formEl.addEventListener("submit", async (evento) => {
     evento.preventDefault();
 
     mensagemErroFormEl.textContent = "";
 
     const id = document.getElementById("compromisso-id").value;
+    const repetir = !id && document.getElementById("repetir-compromisso").checked;
 
-    const dadosCompromisso = {
+    const dadosBase = {
         titulo: document.getElementById("titulo").value,
         descricao: document.getElementById("descricao").value || null,
-        data: document.getElementById("data").value,
         hora_inicio: document.getElementById("hora_inicio").value || null,
         hora_fim: document.getElementById("hora_fim").value || null,
         categoria: document.getElementById("categoria").value || null,
@@ -465,14 +487,57 @@ formEl.addEventListener("submit", async (evento) => {
         // que só a linha do usuário logado pode ser alterada.
         resultado = await supabaseClient
             .from("compromissos")
-            .update(dadosCompromisso)
+            .update({ ...dadosBase, data: document.getElementById("data").value })
             .eq("id", id);
+    } else if (repetir) {
+        const dataInicialStr = document.getElementById("data").value;
+        const dataLimiteStr = document.getElementById("repetir-ate").value;
+
+        const diasSelecionados = Array.from(document.querySelectorAll(".dia-semana-check:checked"))
+            .map((cb) => Number(cb.value));
+
+        if (!dataLimiteStr) {
+            mensagemErroFormEl.textContent = "Informe até quando repetir.";
+            return;
+        }
+        if (diasSelecionados.length === 0) {
+            mensagemErroFormEl.textContent = "Marque ao menos um dia da semana para repetir.";
+            return;
+        }
+
+        const [anoIni, mesIni, diaIni] = dataInicialStr.split("-").map(Number);
+        const [anoFim, mesFim, diaFim] = dataLimiteStr.split("-").map(Number);
+        const dataLimite = new Date(anoFim, mesFim - 1, diaFim);
+
+        if (dataLimite < new Date(anoIni, mesIni - 1, diaIni)) {
+            mensagemErroFormEl.textContent = "A data limite não pode ser antes da data inicial.";
+            return;
+        }
+
+        const serieId = crypto.randomUUID();
+        const linhas = [];
+        let cursor = new Date(anoIni, mesIni - 1, diaIni);
+
+        while (cursor <= dataLimite) {
+            if (diasSelecionados.includes(cursor.getDay())) {
+                linhas.push({
+                    ...dadosBase,
+                    data: formatarDataISO(cursor),
+                    recorrencia: diasSelecionados.length === 7 ? "diaria" : "semanal",
+                    dia_semana: diasSelecionados.join(","),
+                    serie_id: serieId,
+                });
+            }
+            cursor = somarDias(cursor, 1);
+        }
+
+        resultado = await supabaseClient.from("compromissos").insert(linhas);
     } else {
         // Criação: user_id é preenchido automaticamente pelo banco
         // (coluna com "default auth.uid()" configurada no SQL de setup).
         resultado = await supabaseClient
             .from("compromissos")
-            .insert(dadosCompromisso);
+            .insert({ ...dadosBase, data: document.getElementById("data").value });
     }
 
     if (resultado.error) {
@@ -486,8 +551,33 @@ formEl.addEventListener("submit", async (evento) => {
 });
 
 async function excluirCompromisso(id) {
-    const confirmar = confirm("Excluir este compromisso?");
-    if (!confirmar) return;
+    const compromisso = compromissosCache.find((c) => c.id === id);
+
+    if (compromisso && compromisso.serie_id) {
+        const excluirSerie = confirm(
+            "Este compromisso faz parte de uma repetição.\n\n" +
+            "OK = excluir a série inteira\n" +
+            "Cancelar = excluir só esta data"
+        );
+
+        if (excluirSerie) {
+            const { error } = await supabaseClient
+                .from("compromissos")
+                .delete()
+                .eq("serie_id", compromisso.serie_id);
+
+            if (error) {
+                alert("Erro ao excluir: " + error.message);
+                return;
+            }
+            renderizarAgenda();
+            return;
+        }
+        // Cancelar no confirm acima cai aqui embaixo e exclui só esta data.
+    } else {
+        const confirmar = confirm("Excluir este compromisso?");
+        if (!confirmar) return;
+    }
 
     const { error } = await supabaseClient
         .from("compromissos")
