@@ -13,6 +13,23 @@ async function protegerPagina() {
 }
 protegerPagina();
 
+// Lista de contatos carregada uma vez, pra preencher o seletor
+let contatosCache = [];
+async function carregarContatosParaSelecao() {
+    const { data, error } = await supabaseClient.from("contatos").select("id, nome").order("nome");
+    if (error) return;
+    contatosCache = data;
+
+    const select = document.getElementById("compromisso-contato");
+    data.forEach((contato) => {
+        const option = document.createElement("option");
+        option.value = contato.id;
+        option.textContent = contato.nome;
+        select.appendChild(option);
+    });
+}
+carregarContatosParaSelecao();
+
 // ---------------------------------------------------------------
 // Estado da agenda: qual visão está ativa (dia/semana/mes) e qual
 // data serve de referência para essa visão.
@@ -193,12 +210,17 @@ async function renderizarDia() {
 }
 
 function criarItemCompromisso(compromisso) {
+    const nomeContato = compromisso.contato_id
+        ? contatosCache.find((ct) => ct.id === compromisso.contato_id)?.nome
+        : null;
+
     const item = document.createElement("div");
     item.className = "item-compromisso";
     item.innerHTML = `
         <strong>${compromisso.hora_inicio ?? "sem horário"}</strong>
         - ${compromisso.titulo}
         ${compromisso.categoria ? `<em>(${compromisso.categoria})</em>` : ""}
+        ${nomeContato ? `<div class="compromisso-contato">Com: ${nomeContato}</div>` : ""}
         <button type="button" class="btn-editar" data-id="${compromisso.id}">Editar</button>
         <button type="button" class="btn-excluir" data-id="${compromisso.id}">Excluir</button>
     `;
@@ -387,6 +409,7 @@ function abrirFormulario(compromisso = null) {
         document.getElementById("compromisso-id").value = compromisso.id;
         document.getElementById("titulo").value = compromisso.titulo ?? "";
         document.getElementById("descricao").value = compromisso.descricao ?? "";
+        document.getElementById("compromisso-contato").value = compromisso.contato_id ?? "";
         document.getElementById("data").value = compromisso.data ?? "";
         document.getElementById("hora_inicio").value = compromisso.hora_inicio ?? "";
         document.getElementById("hora_fim").value = compromisso.hora_fim ?? "";
@@ -394,6 +417,7 @@ function abrirFormulario(compromisso = null) {
     } else {
         formTituloEl.textContent = "Novo compromisso";
         document.getElementById("compromisso-id").value = "";
+        document.getElementById("compromisso-contato").value = "";
         // Sugere a data que está sendo visualizada como padrão
         document.getElementById("data").value = formatarDataISO(dataAtual);
     }
@@ -430,6 +454,7 @@ formEl.addEventListener("submit", async (evento) => {
         hora_inicio: document.getElementById("hora_inicio").value || null,
         hora_fim: document.getElementById("hora_fim").value || null,
         categoria: document.getElementById("categoria").value || null,
+        contato_id: document.getElementById("compromisso-contato").value || null,
     };
 
     let resultado;
