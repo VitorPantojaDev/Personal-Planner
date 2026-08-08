@@ -33,7 +33,7 @@ function formatarDataISO(date) {
     const ano = date.getFullYear();
     const mes = String(date.getMonth() + 1).padStart(2, "0");
     const dia = String(date.getDate()).padStart(2, "0");
-    return `${ano}-${mes}-${dia}`;
+    return ${ano}-${mes}-${dia};
 }
 
 // Calcula horas restantes, dias restantes e horas/dia necessárias
@@ -116,8 +116,16 @@ function renderizarCursos(cursos) {
             linhaMeta = "Sem data limite definida.";
         } else {
             linhaMeta = `Faltam ${progresso.horasRestantes.toFixed(1)}h em ${progresso.diasRestantes} dia(s) — `
-                + `<strong>${progresso.horasPorDia.toFixed(1)}h/dia</strong>`;
+                + <strong>${progresso.horasPorDia.toFixed(1)}h/dia</strong>;
         }
+
+        const linkHtml = curso.link
+            ? <div class="curso-link"><a href="${curso.link}" target="_blank" rel="noopener">Acessar material</a></div>
+            : "";
+
+        const observacoesHtml = curso.observacoes
+            ? <div class="curso-observacoes">${curso.observacoes}</div>
+            : "";
 
         card.innerHTML = `
             <div class="card-curso-cabecalho">
@@ -128,6 +136,8 @@ function renderizarCursos(cursos) {
                 <div class="barra-progresso-preenchida" style="width: ${progresso.percentual}%;"></div>
             </div>
             <div class="card-curso-meta">${linhaMeta}</div>
+            ${linkHtml}
+            ${observacoesHtml}
             <div class="card-curso-acoes">
                 <button type="button" class="btn-registrar-sessao" data-id="${curso.id}">Registrar sessão</button>
                 <button type="button" class="btn-editar-curso" data-id="${curso.id}">Editar</button>
@@ -179,6 +189,8 @@ function abrirFormularioCurso(curso = null) {
         document.getElementById("curso-nome").value = curso.nome;
         document.getElementById("curso-carga-total").value = curso.carga_horaria_total;
         document.getElementById("curso-data-limite").value = curso.data_limite || "";
+        document.getElementById("curso-link").value = curso.link || "";
+        document.getElementById("curso-observacoes").value = curso.observacoes || "";
     } else {
         formCursoTituloEl.textContent = "Novo curso";
         document.getElementById("curso-id").value = "";
@@ -203,7 +215,9 @@ formCursoEl.addEventListener("submit", async (evento) => {
     const dadosCurso = {
         nome: document.getElementById("curso-nome").value,
         carga_horaria_total: parseFloat(document.getElementById("curso-carga-total").value),
-        data_limite: document.getElementById("curso-data-limite").value || null
+        data_limite: document.getElementById("curso-data-limite").value || null,
+        link: document.getElementById("curso-link").value || null,
+        observacoes: document.getElementById("curso-observacoes").value || null
     };
 
     let resultado;
