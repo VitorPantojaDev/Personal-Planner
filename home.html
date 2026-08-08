@@ -3,22 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Início</title>
+    <title>Agenda</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@500;600;700&family=Noto+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Bem-vindo(a)!</h1>
-    <p id="email-usuario"></p>
-
-    <hr>
-
-    <h2>Agenda</h2>
+    <div class="marca">
+        <svg class="enso" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="50" cy="50" r="38" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-dasharray="220 26"/>
+        </svg>
+        <div>
+            <h1>Bem-vindo(a)!</h1>
+            <p id="email-usuario"></p>
+        </div>
+    </div>
 
     <nav id="menu-principal">
         <span>Agenda</span>
         <a href="estudos.html">Estudos</a>
         <a href="contatos.html">Contatos</a>
     </nav>
+
+    <hr>
 
     <div id="controles-agenda">
         <div id="seletor-visao">
@@ -41,7 +49,7 @@
 
     <br>
 
-    <button id="btn-novo-compromisso">
+    <button type="button" id="btn-novo-compromisso">
         Novo compromisso
     </button>
 
@@ -96,13 +104,47 @@
     </div>
 
     <hr>
- 
-    <button id="btn-sair">Sair</button>
- 
+
+    <div id="painel-tarefas">
+        <div id="cabecalho-tarefas">
+            <h2>Tarefas da Semana</h2>
+            <button type="button" id="btn-revisar-tarefas" style="display:none;">
+                Revisar <span id="badge-revisar">0</span>
+            </button>
+        </div>
+
+        <div id="lista-tarefas">Carregando tarefas...</div>
+
+        <form id="form-nova-tarefa">
+            <input type="text" id="nova-tarefa-titulo" placeholder="Nova tarefa..." required>
+            <button type="submit">Adicionar</button>
+        </form>
+    </div>
+
+    <hr>
+
+    <button type="button" id="btn-sair">Sair</button>
+
+    <!-- Modal de revisão semanal: some por padrão, home.js controla a exibição -->
+    <div id="modal-revisao" style="display:none;">
+        <div id="modal-revisao-conteudo">
+            <h3>Revisão semanal</h3>
+            <p class="modal-revisao-intro">
+                Estas tarefas ainda não foram revisadas nesta semana.
+                Renove o que continua valendo ou exclua o que já não faz mais sentido.
+            </p>
+
+            <div id="lista-revisao"></div>
+
+            <div id="modal-revisao-acoes">
+                <button type="button" id="btn-renovar-todas">Renovar todas</button>
+                <button type="button" id="btn-fechar-revisao">Fechar por agora</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabaseClient.js"></script>
     <script src="js/home.js"></script>
 </body>
 </html>
- 
-
