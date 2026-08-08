@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contatos</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Contatos</h1>
+    <p id="email-usuario"></p>
+
+    <nav id="menu-principal">
+        <a href="home.html">Agenda</a>
+        <a href="estudos.html">Estudos</a>
+        <span>Contatos</span>
+    </nav>
+
+    <hr>
+
+    <div id="lista-contatos">Carregando contatos...</div>
+
+    <br>
+
+    <button id="btn-novo-contato">Novo contato</button>
+
+    <div id="formulario-contato" style="display:none;">
+        <h3 id="form-contato-titulo">Novo contato</h3>
+
+        <form id="form-contato">
+            <input type="hidden" id="contato-id">
+
+            <div>
+                <label for="contato-nome">Nome:</label>
+                <input type="text" id="contato-nome" required>
+            </div>
+
+            <div>
+                <label for="contato-telefone">Telefone:</label>
+                <input type="text" id="contato-telefone">
+            </div>
+
+            <div>
+                <label for="contato-endereco">Endereço:</label>
+                <input type="text" id="contato-endereco">
+            </div>
+
+            <div>
+                <label for="contato-categoria">Categoria:</label>
+                <input type="text" id="contato-categoria" placeholder="cliente, pessoal...">
+            </div>
+
+            <div>
+                <label for="contato-observacoes">Observações:</label>
+                <textarea id="contato-observacoes" rows="3"></textarea>
+            </div>
+
+            <button type="submit">Salvar</button>
+            <button type="button" id="btn-cancelar-contato">Cancelar</button>
+        </form>
+
+        <p id="mensagem-erro-contato" style="color: red;"></p>
+    </div>
+
+    <div id="formulario-pet" style="display:none;">
+        <h3>Novo pet</h3>
+
+        <form id="form-pet">
+            <input type="hidden" id="pet-contato-id">
+
+            <div>
+                <label for="pet-nome">Nome:</label>
+                <input type="text" id="pet-nome" required>
+            </div>
+
+            <div>
+                <label for="pet-especie">Espécie:</label>
+                <input type="text" id="pet-especie" placeholder="cão, gato...">
+            </div>
+
+            <div>
+                <label for="pet-observacoes">Observações:</label>
+                <textarea id="pet-observacoes" rows="2"></textarea>
+            </div>
+
+            <button type="submit">Salvar</button>
+            <button type="button" id="btn-cancelar-pet">Cancelar</button>
+        </form>
+
+        <p id="mensagem-erro-pet" style="color: red;"></p>
+    </div>
+
+    <hr>
+
+    <button id="btn-sair">Sair</button>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabaseClient.js"></script>
+    <script src="js/contatos.js"></script>
+</body>
+</html>
