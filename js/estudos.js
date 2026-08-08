@@ -116,15 +116,15 @@ function renderizarCursos(cursos) {
             linhaMeta = "Sem data limite definida.";
         } else {
             linhaMeta = `Faltam ${progresso.horasRestantes.toFixed(1)}h em ${progresso.diasRestantes} dia(s) — `
-                + <strong>${progresso.horasPorDia.toFixed(1)}h/dia</strong>;
+                + `<strong>${progresso.horasPorDia.toFixed(1)}h/dia</strong>`;
         }
 
         const linkHtml = curso.link
-            ? <div class="curso-link"><a href="${curso.link}" target="_blank" rel="noopener">Acessar material</a></div>
+            ? `<div class="curso-link"><a href="${curso.link}" target="_blank" rel="noopener">Acessar material</a></div>`
             : "";
 
         const observacoesHtml = curso.observacoes
-            ? <div class="curso-observacoes">${curso.observacoes}</div>
+            ? `<div class="curso-observacoes">${curso.observacoes}</div>`
             : "";
 
         card.innerHTML = `
