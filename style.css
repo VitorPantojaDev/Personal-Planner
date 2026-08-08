@@ -1,53 +1,236 @@
+/* =================================================================
+   Personal Planner — tema "mosteiro" (jade, tinta e pergaminho)
+   ================================================================= */
+
+:root {
+    --jade-profundo: #14261f;
+    --jade: #1f4a3c;
+    --jade-claro: #2f6b56;
+    --dourado: #c9a24d;
+    --dourado-claro: #e6c877;
+    --vermelhao: #a3402c;
+    --pergaminho: #f6f1e2;
+    --pergaminho-escuro: #ebe1c4;
+    --tinta: #2b2820;
+    --tinta-suave: #6b6455;
+    --sombra: rgba(20, 38, 31, 0.28);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    background:
+        radial-gradient(circle at 15% 10%, rgba(255, 255, 255, 0.04), transparent 40%),
+        linear-gradient(160deg, var(--jade-profundo), var(--jade) 60%, var(--jade-profundo));
+    background-attachment: fixed;
+    min-height: 100%;
+}
+
 body {
-    font-family: Arial, Helvetica, sans-serif;
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 16px;
+    font-family: "Noto Sans", "Segoe UI", Arial, sans-serif;
+    color: var(--tinta);
+    max-width: 640px;
+    margin: 40px auto;
+    padding: 28px 30px 34px;
+    background: var(--pergaminho);
+    border-radius: 18px;
+    box-shadow: 0 18px 44px var(--sombra), 0 0 0 1px rgba(201, 162, 77, 0.35);
+    position: relative;
 }
 
-#formulario-compromisso {
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 16px;
-    margin-top: 12px;
+/* Filete dourado tipo "moldura de selo" */
+body::before {
+    content: "";
+    position: absolute;
+    inset: 8px;
+    border: 1px solid rgba(201, 162, 77, 0.45);
+    border-radius: 12px;
+    pointer-events: none;
 }
 
-#form-compromisso div {
-    margin-bottom: 10px;
+h1, h2, h3 {
+    font-family: "Noto Serif", Georgia, serif;
+    color: var(--jade);
+    letter-spacing: 0.02em;
+    margin: 0 0 6px;
 }
 
-#form-compromisso label {
+h1 {
+    font-size: 1.5em;
+}
+
+h2 {
+    font-size: 1.15em;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--dourado);
+    display: inline-block;
+    margin-top: 22px;
+    margin-bottom: 14px;
+}
+
+p {
+    color: var(--tinta-suave);
+}
+
+hr {
+    border: none;
+    border-top: 1px dashed rgba(31, 74, 60, 0.3);
+    margin: 22px 0;
+}
+
+/* ---------- Marca / cabeçalho de boas-vindas ---------- */
+.marca {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.marca h1 {
+    margin: 0;
+}
+
+.marca p {
+    margin: 2px 0 0;
+    font-size: 0.85em;
+}
+
+.enso {
+    width: 44px;
+    height: 44px;
+    color: var(--dourado);
+    flex-shrink: 0;
+    transform: rotate(-12deg);
+}
+
+/* ---------- Botões, geral ---------- */
+button {
+    cursor: pointer;
+    font-family: "Noto Sans", sans-serif;
+    font-size: 0.9em;
+    background: var(--jade);
+    color: var(--pergaminho);
+    border: 1px solid var(--jade);
+    border-radius: 7px;
+    padding: 8px 14px;
+    transition: background 0.15s ease, transform 0.1s ease;
+}
+
+button:hover {
+    background: var(--jade-claro);
+}
+
+button:active {
+    transform: scale(0.97);
+}
+
+#btn-cancelar-compromisso,
+#btn-cancelar-curso,
+#btn-cancelar-sessao,
+#btn-cancelar-contato,
+.btn-excluir,
+.btn-excluir-tarefa,
+.btn-excluir-uma,
+#btn-sair {
+    background: transparent;
+    color: var(--vermelhao);
+    border-color: var(--vermelhao);
+}
+
+#btn-sair {
+    background: transparent;
+    color: var(--tinta-suave);
+    border-color: rgba(107, 100, 85, 0.4);
+}
+
+#btn-cancelar-compromisso:hover,
+#btn-cancelar-curso:hover,
+#btn-cancelar-sessao:hover,
+#btn-cancelar-contato:hover,
+.btn-excluir:hover,
+.btn-excluir-tarefa:hover,
+.btn-excluir-uma:hover {
+    background: var(--vermelhao);
+    color: var(--pergaminho);
+}
+
+/* ---------- Formulários ---------- */
+#formulario-compromisso,
+#formulario-curso,
+#formulario-sessao,
+#formulario-contato {
+    border: 1px solid rgba(201, 162, 77, 0.5);
+    background: var(--pergaminho-escuro);
+    border-radius: 10px;
+    padding: 18px;
+    margin-top: 14px;
+}
+
+#form-compromisso div,
+#form-curso div,
+#form-sessao div,
+#form-contato div {
+    margin-bottom: 12px;
+}
+
+#form-compromisso label,
+#form-curso label,
+#form-sessao label,
+#form-contato label {
     display: block;
     margin-bottom: 4px;
-    font-size: 0.9em;
+    font-size: 0.85em;
+    color: var(--jade);
+    font-weight: 600;
 }
 
 #form-compromisso input,
-#form-compromisso textarea {
+#form-compromisso textarea,
+#form-compromisso select,
+#form-curso input,
+#form-curso textarea,
+#form-sessao input,
+#form-contato input,
+#form-nova-tarefa input {
     width: 100%;
     box-sizing: border-box;
-    padding: 6px;
+    padding: 8px 10px;
+    border: 1px solid rgba(43, 40, 32, 0.2);
+    border-radius: 6px;
+    background: var(--pergaminho);
+    font-family: inherit;
+    color: var(--tinta);
+}
+
+#form-compromisso input:focus,
+#form-compromisso textarea:focus,
+#form-curso input:focus,
+#form-sessao input:focus,
+#form-contato input:focus,
+#form-nova-tarefa input:focus {
+    outline: none;
+    border-color: var(--dourado);
+    box-shadow: 0 0 0 2px rgba(201, 162, 77, 0.25);
 }
 
 .item-compromisso {
-    padding: 8px 0;
-    border-bottom: 1px solid #eee;
+    padding: 10px 4px;
+    border-bottom: 1px solid rgba(43, 40, 32, 0.12);
 }
 
 .item-compromisso button {
     margin-left: 8px;
-}
-
-button {
-    cursor: pointer;
+    padding: 4px 10px;
+    font-size: 0.8em;
 }
 
 .agenda-vazio {
-    color: #888;
+    color: var(--tinta-suave);
     font-style: italic;
 }
 
-/* Seletor de visão (Dia / Semana / Mês) */
+/* ---------- Seletor de visão (Dia / Semana / Mês) ---------- */
 #seletor-visao {
     display: flex;
     gap: 6px;
@@ -56,64 +239,88 @@ button {
 
 .btn-visao {
     flex: 1;
-    padding: 6px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    background: #f2f2f2;
+    padding: 8px;
+    border: 1px solid rgba(31, 74, 60, 0.3);
+    border-radius: 7px;
+    background: var(--pergaminho-escuro);
+    color: var(--jade);
+    font-weight: 600;
 }
 
 .btn-visao.ativo {
-    background: #2c5f8a;
-    color: white;
-    border-color: #2c5f8a;
+    background: var(--jade);
+    color: var(--dourado-claro);
+    border-color: var(--jade);
 }
 
-/* Navegação de data (< Hoje >) */
+/* ---------- Navegação de data (< Hoje >) ---------- */
 #navegacao-data {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
+    gap: 8px;
+}
+
+#btn-anterior,
+#btn-proximo {
+    background: transparent;
+    color: var(--jade);
+    border-color: rgba(31, 74, 60, 0.3);
+    font-size: 1.1em;
+    padding: 4px 12px;
+}
+
+#btn-hoje {
+    background: transparent;
+    color: var(--dourado);
+    border-color: var(--dourado);
 }
 
 #rotulo-data {
-    font-weight: bold;
+    font-family: "Noto Serif", serif;
+    font-weight: 600;
     text-align: center;
     flex: 1;
+    color: var(--jade);
 }
 
-/* Visão SEMANA */
+/* ---------- Visão SEMANA ---------- */
 #grade-semana {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
+    gap: 5px;
 }
 
 .coluna-semana {
-    border: 1px solid #eee;
-    border-radius: 4px;
-    padding: 4px;
+    border: 1px solid rgba(43, 40, 32, 0.12);
+    border-radius: 6px;
+    padding: 5px;
     min-height: 80px;
-    font-size: 0.8em;
+    font-size: 0.78em;
+    background: rgba(255, 255, 255, 0.35);
 }
 
 .coluna-hoje {
-    background: #eaf2fb;
-    border-color: #2c5f8a;
+    background: rgba(201, 162, 77, 0.15);
+    border-color: var(--dourado);
 }
 
 .cabecalho-coluna-semana {
-    font-weight: bold;
+    font-family: "Noto Serif", serif;
+    font-weight: 600;
     text-align: center;
     margin-bottom: 4px;
-    font-size: 0.85em;
+    font-size: 0.9em;
+    color: var(--jade);
 }
 
 .item-semana {
-    background: #f5f8fa;
-    border-radius: 3px;
-    padding: 2px 4px;
-    margin-bottom: 2px;
+    background: var(--jade);
+    color: var(--pergaminho);
+    border-radius: 4px;
+    padding: 3px 5px;
+    margin-bottom: 3px;
     cursor: pointer;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -122,41 +329,45 @@ button {
 
 .semana-vazio {
     text-align: center;
-    color: #ccc;
+    color: rgba(43, 40, 32, 0.25);
 }
 
-/* Visão MÊS */
+/* ---------- Visão MÊS ---------- */
 #grade-mes {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 2px;
+    gap: 3px;
 }
 
 .cabecalho-coluna-mes {
-    font-weight: bold;
+    font-family: "Noto Serif", serif;
+    font-weight: 600;
     text-align: center;
-    font-size: 0.8em;
-    padding-bottom: 4px;
+    font-size: 0.78em;
+    padding-bottom: 5px;
+    color: var(--jade);
 }
 
 .celula-mes {
     aspect-ratio: 1;
-    border: 1px solid #eee;
-    border-radius: 4px;
-    padding: 4px;
+    border: 1px solid rgba(43, 40, 32, 0.12);
+    border-radius: 6px;
+    padding: 5px;
     cursor: pointer;
     position: relative;
     font-size: 0.85em;
+    background: rgba(255, 255, 255, 0.35);
 }
 
 .celula-mes-vazia {
     border: none;
+    background: none;
     cursor: default;
 }
 
 .celula-hoje {
-    background: #eaf2fb;
-    border-color: #2c5f8a;
+    background: rgba(201, 162, 77, 0.18);
+    border-color: var(--dourado);
 }
 
 .numero-dia {
@@ -165,33 +376,38 @@ button {
 
 .indicador-compromisso {
     position: absolute;
-    bottom: 4px;
-    right: 4px;
+    bottom: 5px;
+    right: 5px;
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: #2c5f8a;
+    background: var(--vermelhao);
 }
 
 /* ---------- Menu de navegação entre páginas ---------- */
 #menu-principal {
     display: flex;
-    gap: 12px;
-    margin-bottom: 8px;
+    gap: 16px;
+    margin: 14px 0 4px;
     font-size: 0.9em;
+    padding-top: 10px;
+    border-top: 1px dashed rgba(31, 74, 60, 0.25);
 }
 
 #menu-principal a {
-    color: #2c5f8a;
+    color: var(--jade-claro);
     text-decoration: none;
+    font-weight: 500;
 }
 
 #menu-principal a:hover {
-    text-decoration: underline;
+    color: var(--dourado);
 }
 
 #menu-principal span {
-    font-weight: bold;
+    font-weight: 700;
+    color: var(--dourado);
+    border-bottom: 2px solid var(--dourado);
 }
 
 /* ---------- Cards de curso (página Estudos) ---------- */
@@ -202,9 +418,10 @@ button {
 }
 
 .card-curso {
-    border: 1px solid #eee;
-    border-radius: 8px;
-    padding: 10px 12px;
+    border: 1px solid rgba(201, 162, 77, 0.4);
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 10px;
+    padding: 12px 14px;
 }
 
 .card-curso-cabecalho {
@@ -212,15 +429,16 @@ button {
     justify-content: space-between;
     align-items: baseline;
     margin-bottom: 6px;
+    font-family: "Noto Serif", serif;
 }
 
 .curso-horas {
     font-size: 0.85em;
-    color: #666;
+    color: var(--tinta-suave);
 }
 
 .barra-progresso {
-    background: #eee;
+    background: rgba(43, 40, 32, 0.12);
     border-radius: 6px;
     height: 8px;
     overflow: hidden;
@@ -228,7 +446,7 @@ button {
 }
 
 .barra-progresso-preenchida {
-    background: #2c5f8a;
+    background: var(--jade);
     height: 100%;
 }
 
@@ -243,12 +461,12 @@ button {
 }
 
 .curso-link a {
-    color: #2c5f8a;
+    color: var(--jade-claro);
 }
 
 .curso-observacoes {
     font-size: 0.85em;
-    color: #555;
+    color: var(--tinta-suave);
     margin-bottom: 8px;
     white-space: pre-wrap;
 }
@@ -256,62 +474,273 @@ button {
 #formulario-curso textarea {
     width: 100%;
     box-sizing: border-box;
-    padding: 6px;
+    padding: 8px;
     font-family: inherit;
+    border: 1px solid rgba(43, 40, 32, 0.2);
+    border-radius: 6px;
+    background: var(--pergaminho);
 }
 
 .card-curso-acoes button {
-    font-size: 0.8em;
-    padding: 4px 8px;
+    font-size: 0.78em;
+    padding: 5px 9px;
     margin-right: 6px;
 }
 
 /* Cores de status conforme urgência */
 .status-concluido .barra-progresso-preenchida {
-    background: #2e7d32;
+    background: var(--jade-claro);
 }
 
 .status-ok .barra-progresso-preenchida {
-    background: #2c5f8a;
+    background: var(--jade);
 }
 
 .status-atencao .barra-progresso-preenchida {
-    background: #e0a800;
+    background: var(--dourado);
 }
 
 .status-urgente .barra-progresso-preenchida,
 .status-vencido .barra-progresso-preenchida {
-    background: #c0392b;
+    background: var(--vermelhao);
 }
 
 .status-vencido .card-curso-meta {
-    color: #c0392b;
+    color: var(--vermelhao);
     font-weight: bold;
 }
 
-#formulario-curso,
-#formulario-sessao {
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 16px;
-    margin-top: 12px;
+/* =================================================================
+   Tarefas da semana
+   ================================================================= */
+#painel-tarefas {
+    background: rgba(255, 255, 255, 0.35);
+    border: 1px solid rgba(201, 162, 77, 0.4);
+    border-radius: 10px;
+    padding: 16px 16px 14px;
 }
 
-#formulario-curso div,
-#formulario-sessao div {
-    margin-bottom: 10px;
+#cabecalho-tarefas {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
 }
 
-#formulario-curso label,
-#formulario-sessao label {
-    display: block;
-    margin-bottom: 4px;
-    font-size: 0.9em;
+#cabecalho-tarefas h2 {
+    margin-top: 0;
 }
 
-#formulario-curso input,
-#formulario-sessao input {
+#btn-revisar-tarefas {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--vermelhao);
+    border-color: var(--vermelhao);
+    color: var(--pergaminho);
+    font-size: 0.8em;
+    padding: 6px 12px;
+    animation: respirar 2.4s ease-in-out infinite;
+}
+
+#badge-revisar {
+    background: var(--pergaminho);
+    color: var(--vermelhao);
+    border-radius: 50%;
+    min-width: 18px;
+    height: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85em;
+    font-weight: 700;
+    padding: 0 4px;
+}
+
+@keyframes respirar {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(163, 64, 44, 0.35); }
+    50% { box-shadow: 0 0 0 6px rgba(163, 64, 44, 0); }
+}
+
+#lista-tarefas {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.item-tarefa {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    background: var(--pergaminho);
+    border: 1px solid rgba(43, 40, 32, 0.1);
+    border-radius: 7px;
+    padding: 8px 10px;
+}
+
+.tarefa-checkbox-linha {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    cursor: pointer;
+    flex: 1;
+    min-width: 0;
+}
+
+.tarefa-checkbox {
+    width: 17px;
+    height: 17px;
+    accent-color: var(--jade);
+    flex-shrink: 0;
+}
+
+.tarefa-titulo {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.item-tarefa.tarefa-feita .tarefa-titulo {
+    text-decoration: line-through;
+    color: var(--tinta-suave);
+}
+
+.tarefa-acoes {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.tarefa-acoes button {
+    padding: 3px 8px;
+    font-size: 0.85em;
+    background: transparent;
+    color: var(--jade);
+    border-color: rgba(31, 74, 60, 0.25);
+}
+
+.btn-editar-tarefa:hover {
+    background: var(--jade);
+    color: var(--pergaminho);
+}
+
+#form-nova-tarefa {
+    display: flex;
+    gap: 8px;
+}
+
+#form-nova-tarefa input {
+    flex: 1;
+}
+
+#form-nova-tarefa button {
+    white-space: nowrap;
+}
+
+/* ---------- Modal de revisão semanal ---------- */
+#modal-revisao {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 38, 31, 0.55);
+    backdrop-filter: blur(2px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 100;
+    animation: surgir 0.2s ease-out;
+}
+
+@keyframes surgir {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+#modal-revisao-conteudo {
+    background: var(--pergaminho);
+    border: 1px solid var(--dourado);
+    border-radius: 14px;
+    padding: 24px;
+    max-width: 440px;
     width: 100%;
-    box-sizing: border-box;
-    padding: 6px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+#modal-revisao-conteudo h3 {
+    color: var(--jade);
+    margin-bottom: 8px;
+}
+
+.modal-revisao-intro {
+    font-size: 0.88em;
+    margin-bottom: 16px;
+}
+
+#lista-revisao {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+.item-revisao {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    background: var(--pergaminho-escuro);
+    border-radius: 7px;
+    padding: 8px 10px;
+}
+
+.item-revisao .tarefa-titulo {
+    font-weight: 500;
+}
+
+.btn-renovar-uma {
+    background: var(--jade);
+    border-color: var(--jade);
+    color: var(--pergaminho);
+    font-size: 0.8em;
+    padding: 4px 10px;
+}
+
+.btn-excluir-uma {
+    font-size: 0.8em;
+    padding: 4px 10px;
+}
+
+#modal-revisao-acoes {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+#btn-renovar-todas {
+    background: var(--jade);
+    border-color: var(--jade);
+}
+
+#btn-fechar-revisao {
+    background: transparent;
+    color: var(--tinta-suave);
+    border-color: rgba(107, 100, 85, 0.35);
+}
+
+/* ---------- Responsivo ---------- */
+@media (max-width: 480px) {
+    body {
+        margin: 0;
+        border-radius: 0;
+        min-height: 100vh;
+    }
+
+    .coluna-semana {
+        font-size: 0.68em;
+        padding: 3px;
+    }
 }
