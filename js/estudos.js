@@ -33,7 +33,7 @@ function formatarDataISO(date) {
     const ano = date.getFullYear();
     const mes = String(date.getMonth() + 1).padStart(2, "0");
     const dia = String(date.getDate()).padStart(2, "0");
-    return ${ano}-${mes}-${dia};
+    return `${ano}-${mes}-${dia}`;
 }
 
 // Calcula horas restantes, dias restantes e horas/dia necessárias
