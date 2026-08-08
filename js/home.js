@@ -508,7 +508,275 @@ document.getElementById("btn-sair").addEventListener("click", async () => {
     window.location.href = "index.html";
 });
 
+// =================================================================
+// TAREFAS DA SEMANA
+// Lista de tarefas recorrentes (checklist), sem data fixa de
+// compromisso. Cada tarefa guarda a data da última revisão. Toda
+// segunda-feira, tarefas não revisadas nesta semana disparam um
+// aviso para o usuário renovar ou excluir cada uma.
+// =================================================================
+let tarefasCache = [];
+
+const listaTarefasEl = document.getElementById("lista-tarefas");
+const formNovaTarefaEl = document.getElementById("form-nova-tarefa");
+const btnRevisarTarefasEl = document.getElementById("btn-revisar-tarefas");
+const badgeRevisarEl = document.getElementById("badge-revisar");
+const modalRevisaoEl = document.getElementById("modal-revisao");
+const listaRevisaoEl = document.getElementById("lista-revisao");
+
+// Chave usada para não insistir com o modal automático mais de uma
+// vez no mesmo dia, caso o usuário só feche sem decidir nada.
+const CHAVE_DISPENSA_REVISAO = "revisaoTarefasDispensadaEm";
+
+async function carregarTarefas() {
+    listaTarefasEl.innerHTML = "Carregando tarefas...";
+
+    const { data, error } = await supabaseClient
+        .from("tarefas_semana")
+        .select("*")
+        .order("created_at", { ascending: true });
+
+    if (error) {
+        console.log(error);
+        listaTarefasEl.innerHTML = "Erro ao carregar tarefas.";
+        return;
+    }
+
+    tarefasCache = data;
+    renderizarTarefas();
+    atualizarBadgeRevisar();
+}
+
+function renderizarTarefas() {
+    if (tarefasCache.length === 0) {
+        listaTarefasEl.innerHTML = '<p class="agenda-vazio">Nenhuma tarefa cadastrada.</p>';
+        return;
+    }
+
+    listaTarefasEl.innerHTML = "";
+
+    tarefasCache.forEach((tarefa) => {
+        const item = document.createElement("div");
+        item.className = "item-tarefa";
+        if (tarefa.feita) item.classList.add("tarefa-feita");
+        item.dataset.id = tarefa.id;
+        item.innerHTML = `
+            <label class="tarefa-checkbox-linha">
+                <input type="checkbox" class="tarefa-checkbox" ${tarefa.feita ? "checked" : ""}>
+                <span class="tarefa-titulo">${tarefa.titulo}</span>
+            </label>
+            <div class="tarefa-acoes">
+                <button type="button" class="btn-editar-tarefa" aria-label="Editar">&#9998;</button>
+                <button type="button" class="btn-excluir-tarefa" aria-label="Excluir">&times;</button>
+            </div>
+        `;
+        listaTarefasEl.appendChild(item);
+    });
+}
+
+listaTarefasEl.addEventListener("click", async (evento) => {
+    const item = evento.target.closest(".item-tarefa");
+    if (!item) return;
+    const id = item.dataset.id;
+    const tarefa = tarefasCache.find((t) => t.id === id);
+    if (!tarefa) return;
+
+    if (evento.target.classList.contains("tarefa-checkbox")) {
+        const { error } = await supabaseClient
+            .from("tarefas_semana")
+            .update({ feita: evento.target.checked })
+            .eq("id", id);
+        if (error) {
+            console.log(error);
+            alert("Erro ao atualizar tarefa: " + error.message);
+            return;
+        }
+        tarefa.feita = evento.target.checked;
+        item.classList.toggle("tarefa-feita", tarefa.feita);
+        return;
+    }
+
+    if (evento.target.closest(".btn-editar-tarefa")) {
+        const novoTitulo = prompt("Editar tarefa:", tarefa.titulo);
+        if (novoTitulo === null || novoTitulo.trim() === "") return;
+
+        const { error } = await supabaseClient
+            .from("tarefas_semana")
+            .update({ titulo: novoTitulo.trim() })
+            .eq("id", id);
+        if (error) {
+            console.log(error);
+            alert("Erro ao editar tarefa: " + error.message);
+            return;
+        }
+        tarefa.titulo = novoTitulo.trim();
+        renderizarTarefas();
+        return;
+    }
+
+    if (evento.target.closest(".btn-excluir-tarefa")) {
+        const confirmar = confirm("Excluir esta tarefa?");
+        if (!confirmar) return;
+        await excluirTarefa(id);
+    }
+});
+
+async function excluirTarefa(id) {
+    const { error } = await supabaseClient
+        .from("tarefas_semana")
+        .delete()
+        .eq("id", id);
+
+    if (error) {
+        console.log(error);
+        alert("Erro ao excluir tarefa: " + error.message);
+        return;
+    }
+
+    tarefasCache = tarefasCache.filter((t) => t.id !== id);
+    renderizarTarefas();
+    atualizarBadgeRevisar();
+}
+
+async function renovarTarefa(id) {
+    const hojeISO = formatarDataISO(new Date());
+    const { error } = await supabaseClient
+        .from("tarefas_semana")
+        .update({ ultima_revisao: hojeISO })
+        .eq("id", id);
+
+    if (error) {
+        console.log(error);
+        alert("Erro ao renovar tarefa: " + error.message);
+        return;
+    }
+
+    const tarefa = tarefasCache.find((t) => t.id === id);
+    if (tarefa) tarefa.ultima_revisao = hojeISO;
+    atualizarBadgeRevisar();
+}
+
+formNovaTarefaEl.addEventListener("submit", async (evento) => {
+    evento.preventDefault();
+
+    const inputEl = document.getElementById("nova-tarefa-titulo");
+    const titulo = inputEl.value.trim();
+    if (!titulo) return;
+
+    const { data, error } = await supabaseClient
+        .from("tarefas_semana")
+        .insert({ titulo })
+        .select()
+        .single();
+
+    if (error) {
+        console.log(error);
+        alert("Erro ao criar tarefa: " + error.message);
+        return;
+    }
+
+    tarefasCache.push(data);
+    inputEl.value = "";
+    renderizarTarefas();
+});
+
+// ---------------------------------------------------------------
+// Revisão semanal: tarefas cuja "ultima_revisao" é anterior à
+// segunda-feira desta semana estão pendentes de revisão.
+// ---------------------------------------------------------------
+function tarefasPendentesRevisao() {
+    const inicioSemanaISO = formatarDataISO(obterInicioSemana(new Date()));
+    return tarefasCache.filter((t) => t.ultima_revisao < inicioSemanaISO);
+}
+
+function atualizarBadgeRevisar() {
+    const pendentes = tarefasPendentesRevisao();
+    if (pendentes.length === 0) {
+        btnRevisarTarefasEl.style.display = "none";
+        return;
+    }
+    btnRevisarTarefasEl.style.display = "inline-flex";
+    badgeRevisarEl.textContent = pendentes.length;
+}
+
+function abrirModalRevisao() {
+    const pendentes = tarefasPendentesRevisao();
+    if (pendentes.length === 0) return;
+
+    listaRevisaoEl.innerHTML = "";
+    pendentes.forEach((tarefa) => {
+        const linha = document.createElement("div");
+        linha.className = "item-revisao";
+        linha.dataset.id = tarefa.id;
+        linha.innerHTML = `
+            <span class="tarefa-titulo">${tarefa.titulo}</span>
+            <div class="tarefa-acoes">
+                <button type="button" class="btn-renovar-uma">Renovar</button>
+                <button type="button" class="btn-excluir-uma">Excluir</button>
+            </div>
+        `;
+        listaRevisaoEl.appendChild(linha);
+    });
+
+    modalRevisaoEl.style.display = "flex";
+}
+
+function fecharModalRevisao() {
+    modalRevisaoEl.style.display = "none";
+    localStorage.setItem(CHAVE_DISPENSA_REVISAO, formatarDataISO(new Date()));
+}
+
+listaRevisaoEl.addEventListener("click", async (evento) => {
+    const linha = evento.target.closest(".item-revisao");
+    if (!linha) return;
+    const id = linha.dataset.id;
+
+    if (evento.target.classList.contains("btn-renovar-uma")) {
+        await renovarTarefa(id);
+        linha.remove();
+    } else if (evento.target.classList.contains("btn-excluir-uma")) {
+        await excluirTarefa(id);
+        linha.remove();
+    }
+
+    if (listaRevisaoEl.children.length === 0) {
+        modalRevisaoEl.style.display = "none";
+    }
+    atualizarBadgeRevisar();
+});
+
+btnRevisarTarefasEl.addEventListener("click", abrirModalRevisao);
+document.getElementById("btn-fechar-revisao").addEventListener("click", fecharModalRevisao);
+
+document.getElementById("btn-renovar-todas").addEventListener("click", async () => {
+    const pendentes = tarefasPendentesRevisao();
+    for (const tarefa of pendentes) {
+        await renovarTarefa(tarefa.id);
+    }
+    listaRevisaoEl.innerHTML = "";
+    modalRevisaoEl.style.display = "none";
+    atualizarBadgeRevisar();
+});
+
+async function verificarAvisoSegundaFeira() {
+    const ehSegunda = new Date().getDay() === 1;
+    if (!ehSegunda) return;
+
+    const hojeISO = formatarDataISO(new Date());
+    const dispensadoHoje = localStorage.getItem(CHAVE_DISPENSA_REVISAO) === hojeISO;
+    if (dispensadoHoje) return;
+
+    if (tarefasPendentesRevisao().length > 0) {
+        abrirModalRevisao();
+    }
+}
+
 // ---------------------------------------------------------------
 // Primeira renderização
 // ---------------------------------------------------------------
 renderizarAgenda();
+
+(async function iniciarTarefas() {
+    await carregarTarefas();
+    await verificarAvisoSegundaFeira();
+})();
