@@ -180,45 +180,45 @@ button {
     margin-bottom: 8px;
     font-size: 0.9em;
 }
- 
+
 #menu-principal a {
     color: #2c5f8a;
     text-decoration: none;
 }
- 
+
 #menu-principal a:hover {
     text-decoration: underline;
 }
- 
+
 #menu-principal span {
     font-weight: bold;
 }
- 
+
 /* ---------- Cards de curso (página Estudos) ---------- */
 #lista-cursos {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
- 
+
 .card-curso {
     border: 1px solid #eee;
     border-radius: 8px;
     padding: 10px 12px;
 }
- 
+
 .card-curso-cabecalho {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
     margin-bottom: 6px;
 }
- 
+
 .curso-horas {
     font-size: 0.85em;
     color: #666;
 }
- 
+
 .barra-progresso {
     background: #eee;
     border-radius: 6px;
@@ -226,46 +226,69 @@ button {
     overflow: hidden;
     margin-bottom: 6px;
 }
- 
+
 .barra-progresso-preenchida {
     background: #2c5f8a;
     height: 100%;
 }
- 
+
 .card-curso-meta {
     font-size: 0.85em;
     margin-bottom: 8px;
 }
- 
+
+.curso-link {
+    font-size: 0.85em;
+    margin-bottom: 6px;
+}
+
+.curso-link a {
+    color: #2c5f8a;
+}
+
+.curso-observacoes {
+    font-size: 0.85em;
+    color: #555;
+    margin-bottom: 8px;
+    white-space: pre-wrap;
+}
+
+#formulario-curso textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 6px;
+    font-family: inherit;
+}
+
 .card-curso-acoes button {
     font-size: 0.8em;
     padding: 4px 8px;
     margin-right: 6px;
 }
- 
+
 /* Cores de status conforme urgência */
 .status-concluido .barra-progresso-preenchida {
     background: #2e7d32;
 }
- 
+
 .status-ok .barra-progresso-preenchida {
     background: #2c5f8a;
 }
- 
+
 .status-atencao .barra-progresso-preenchida {
     background: #e0a800;
 }
- 
+
 .status-urgente .barra-progresso-preenchida,
 .status-vencido .barra-progresso-preenchida {
     background: #c0392b;
 }
- 
+
 .status-vencido .card-curso-meta {
     color: #c0392b;
     font-weight: bold;
 }
- 
+
 #formulario-curso,
 #formulario-sessao {
     border: 1px solid #ccc;
@@ -273,23 +296,22 @@ button {
     padding: 16px;
     margin-top: 12px;
 }
- 
+
 #formulario-curso div,
 #formulario-sessao div {
     margin-bottom: 10px;
 }
- 
+
 #formulario-curso label,
 #formulario-sessao label {
     display: block;
     margin-bottom: 4px;
     font-size: 0.9em;
 }
- 
+
 #formulario-curso input,
 #formulario-sessao input {
     width: 100%;
     box-sizing: border-box;
     padding: 6px;
 }
- 
