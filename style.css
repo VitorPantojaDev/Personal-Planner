@@ -293,6 +293,7 @@ button:active {
 }
 
 .coluna-semana {
+    cursor: pointer;
     min-width: 0;
     border: 1px solid rgba(43, 40, 32, 0.12);
     border-radius: 6px;
@@ -741,7 +742,6 @@ button:active {
     }
 
     .coluna-semana {
-        cursor: pointer;
         font-size: 0.68em;
         padding: 3px;
     }
