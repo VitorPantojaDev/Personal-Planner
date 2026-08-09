@@ -349,18 +349,21 @@ async function renderizarMes() {
     for (let dia = 1; dia <= ultimoDia.getDate(); dia++) {
         const diaData = new Date(ano, mes, dia);
         const diaISO = formatarDataISO(diaData);
-        const temCompromisso = !!porData[diaISO];
+        
+        const compromissosDoDia = porData[diaISO] || [];
+        const primeiroTitulo = compromissosDoDia[0]?.titulo ?? "";
+        const resumo = primeiroTitulo.length > 8 ? primeiroTitulo.slice(0, 8) + "…" : primeiroTitulo;
 
         const celula = document.createElement("div");
         celula.className = "celula-mes";
         if (diaISO === hojeISO) celula.classList.add("celula-hoje");
-        celula.dataset.data = diaISO;
+            celula.dataset.data = diaISO;
 
         celula.innerHTML = `
-            <span class="numero-dia">${dia}</span>
-            ${temCompromisso ? '<span class="indicador-compromisso"></span>' : ""}
-        `;
-
+        <span class="numero-dia">${dia}</span>
+        ${compromissosDoDia.length > 0 ? `<span class="resumo-mes">${resumo}</span>` : ""}
+        ${compromissosDoDia.length > 1 ? '<span class="indicador-compromisso"></span>' : ""}
+    `;
         grade.appendChild(celula);
     }
 
