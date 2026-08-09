@@ -90,23 +90,26 @@ function renderizarContatos() {
             : '<p class="sem-pets">Nenhum pet cadastrado.</p>';
 
         card.innerHTML = `
-            <div class="card-contato-cabecalho">
+            <div class="card-contato-cabecalho" data-id="${contato.id}">
                 <strong>${contato.nome}</strong>
                 ${categoriaHtml}
             </div>
-            ${telefoneHtml}
-            ${enderecoHtml}
-            ${observacoesHtml}
 
-            <div class="card-contato-pets">
-                <p><strong>Pets</strong></p>
-                ${petsHtml}
-                <button type="button" class="btn-novo-pet" data-id="${contato.id}">Adicionar pet</button>
-            </div>
+            <div class="card-contato-detalhes oculto">
+                ${telefoneHtml}
+                ${enderecoHtml}
+                ${observacoesHtml}
 
-            <div class="card-contato-acoes">
-                <button type="button" class="btn-editar-contato" data-id="${contato.id}">Editar</button>
-                <button type="button" class="btn-excluir-contato" data-id="${contato.id}">Excluir</button>
+                <div class="card-contato-pets">
+                    <p><strong>Pets</strong></p>
+                    ${petsHtml}
+                    <button type="button" class="btn-novo-pet" data-id="${contato.id}">Adicionar pet</button>
+                </div>
+
+                <div class="card-contato-acoes">
+                    <button type="button" class="btn-editar-contato" data-id="${contato.id}">Editar</button>
+                    <button type="button" class="btn-excluir-contato" data-id="${contato.id}">Excluir</button>
+                </div>
             </div>
         `;
 
@@ -115,6 +118,11 @@ function renderizarContatos() {
 }
 
 listaContatosEl.addEventListener("click", (evento) => {
+    const cabecalhoClicado = evento.target.closest(".card-contato-cabecalho");
+    if (cabecalhoClicado) {
+        cabecalhoClicado.nextElementSibling.classList.toggle("oculto");
+        return;
+    }
     const idNovoPet = evento.target.closest(".btn-novo-pet")?.dataset.id;
     if (idNovoPet) {
         abrirFormularioPet(idNovoPet);
