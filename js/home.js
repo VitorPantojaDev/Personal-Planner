@@ -267,12 +267,12 @@ async function renderizarSemana() {
 
         const coluna = document.createElement("div");
         coluna.className = "coluna-semana";
+        coluna.dataset.data = diaISO;
         if (diaISO === hojeISO) coluna.classList.add("coluna-hoje");
 
         const cabecalho = document.createElement("div");
         cabecalho.className = "cabecalho-coluna-semana";
         cabecalho.textContent = `${NOMES_DIA_SEMANA[i]} ${diaData.getDate()}`;
-        cabecalho.dataset.data = diaISO;
         coluna.appendChild(cabecalho);
 
         if (compromissosDoDia.length === 0) {
@@ -400,9 +400,9 @@ agendaContainerEl.addEventListener("click", (evento) => {
 
     // Clique num compromisso na visão semana → abre para editar
 
-    const cabecalhoSemana = evento.target.closest(".cabecalho-coluna-semana");
-    if (cabecalhoSemana) {
-        const [ano, mes, dia] = cabecalhoSemana.dataset.data.split("-").map(Number);
+    const colunaSemana = evento.target.closest(".coluna-semana");
+    if (colunaSemana && !evento.target.closest(".item-semana")) {
+        const [ano, mes, dia] = colunaSemana.dataset.data.split("-").map(Number);
         dataAtual = new Date(ano, mes - 1, dia);
         visaoAtual = "dia";
         renderizarAgenda();
