@@ -272,6 +272,7 @@ async function renderizarSemana() {
         const cabecalho = document.createElement("div");
         cabecalho.className = "cabecalho-coluna-semana";
         cabecalho.textContent = `${NOMES_DIA_SEMANA[i]} ${diaData.getDate()}`;
+        cabecalho.dataset.data = diaISO;
         coluna.appendChild(cabecalho);
 
         if (compromissosDoDia.length === 0) {
@@ -351,19 +352,26 @@ async function renderizarMes() {
         const diaISO = formatarDataISO(diaData);
         
         const compromissosDoDia = porData[diaISO] || [];
-        const primeiroTitulo = compromissosDoDia[0]?.titulo ?? "";
-        const resumo = primeiroTitulo.length > 8 ? primeiroTitulo.slice(0, 8) + "…" : primeiroTitulo;
+        const MAX_LINHAS = 3;
+
+        const linhas = compromissosDoDia.slice(0, MAX_LINHAS).map((c) => {
+            const t = c.titulo.length > 9 ? c.titulo.slice(0, 9) + "…" : c.titulo;
+            return `<span class="resumo-mes">${t}</span>`;
+        }).join("");
+
+        const restantes = compromissosDoDia.length - MAX_LINHAS;
+        const linhaExtra = restantes > 0 ? `<span class="resumo-mes resumo-mes-extra">+${restantes}...</span>` : "";
 
         const celula = document.createElement("div");
         celula.className = "celula-mes";
         if (diaISO === hojeISO) celula.classList.add("celula-hoje");
-            celula.dataset.data = diaISO;
+        celula.dataset.data = diaISO;
 
         celula.innerHTML = `
-        <span class="numero-dia">${dia}</span>
-        ${compromissosDoDia.length > 0 ? `<span class="resumo-mes">${resumo}</span>` : ""}
-        ${compromissosDoDia.length > 1 ? '<span class="indicador-compromisso"></span>' : ""}
-    `;
+            <span class="numero-dia">${dia}</span>
+            ${linhas}
+            ${linhaExtra}
+        `;
         grade.appendChild(celula);
     }
 
@@ -391,6 +399,15 @@ agendaContainerEl.addEventListener("click", (evento) => {
     }
 
     // Clique num compromisso na visão semana → abre para editar
+
+    const cabecalhoSemana = evento.target.closest(".cabecalho-coluna-semana");
+    if (cabecalhoSemana) {
+        const [ano, mes, dia] = cabecalhoSemana.dataset.data.split("-").map(Number);
+        dataAtual = new Date(ano, mes - 1, dia);
+        visaoAtual = "dia";
+        renderizarAgenda();
+        return;
+    }
     const itemSemana = evento.target.closest(".item-semana");
     if (itemSemana) {
         const compromisso = compromissosCache.find((c) => c.id === itemSemana.dataset.id);
