@@ -812,3 +812,20 @@ button:active {
     white-space: nowrap;
     max-width: 100%;
 }
+
+.oculto {
+    display: none;
+}
+
+.card-contato-cabecalho {
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-contato-detalhes {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed #ccc;
+}
