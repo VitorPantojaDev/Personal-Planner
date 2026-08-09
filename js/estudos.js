@@ -126,17 +126,18 @@ function renderizarCursos(cursos) {
                 + `<strong>${progresso.horasPorDia.toFixed(1)}h/dia</strong>`;
         }
 
-        const linkHtml = curso.link
-            ? `<div class="curso-link"><a href="${curso.link}" target="_blank" rel="noopener">Acessar material</a></div>`
+        const linkSeguro = curso.link && /^https?:\/\//i.test(curso.link) ? curso.link : null;
+        const linkHtml = linkSeguro
+            ? `<div class="curso-link"><a href="${escapeHtml(linkSeguro)}" target="_blank" rel="noopener">Acessar material</a></div>`
             : "";
 
         const observacoesHtml = curso.observacoes
-            ? `<div class="curso-observacoes">${curso.observacoes}</div>`
+            ? `<div class="curso-observacoes">${escapeHtml(curso.observacoes)}</div>`
             : "";
 
         card.innerHTML = `
             <div class="card-curso-cabecalho">
-                <strong>${curso.nome}</strong>
+                <strong>${escapeHtml(curso.nome)}</strong>
                 <span class="curso-horas">${curso.horas_estudadas.toFixed(1)} / ${curso.carga_horaria_total}h</span>
             </div>
             <div class="barra-progresso">
