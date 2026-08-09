@@ -27,6 +27,23 @@ const mensagemErroPetEl = document.getElementById("mensagem-erro-pet");
 let contatosCache = [];
 let petsCache = []; // todos os pets do usuário, agrupados por contato_id na renderização
 
+const pesquisaContatosEl = document.getElementById("pesquisa-contatos");
+pesquisaContatosEl.addEventListener("input", renderizarContatos);
+
+function obterContatosParaExibir() {
+    const termo = pesquisaContatosEl.value.toLowerCase();
+    if (!termo) return contatosCache;
+
+    return contatosCache.filter((contato) => {
+        const nomeBate = contato.nome.toLowerCase().includes(termo);
+        const petBate = petsCache.some((pet) =>
+            pet.contato_id === contato.id &&
+            (pet.nome.toLowerCase().includes(termo) || (pet.especie ?? "").toLowerCase().includes(termo))
+        );
+        return nomeBate || petBate;
+    });
+}
+
 // ---------------------------------------------------------------
 // Carregar contatos + pets
 // ---------------------------------------------------------------
@@ -61,14 +78,16 @@ async function carregarContatos() {
 }
 
 function renderizarContatos() {
-    if (contatosCache.length === 0) {
-        listaContatosEl.innerHTML = '<p class="agenda-vazio">Nenhum contato cadastrado.</p>';
+    const contatosParaExibir = obterContatosParaExibir();
+
+    if (contatosParaExibir.length === 0) {
+        listaContatosEl.innerHTML = '<p class="agenda-vazio">Nenhum contato encontrado.</p>';
         return;
     }
 
     listaContatosEl.innerHTML = "";
 
-    contatosCache.forEach((contato) => {
+    contatosParaExibir.forEach((contato) => {
         const petsDoContato = petsCache.filter((p) => p.contato_id === contato.id);
 
         const card = document.createElement("div");
