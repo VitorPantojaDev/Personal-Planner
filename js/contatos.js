@@ -93,16 +93,16 @@ function renderizarContatos() {
         const card = document.createElement("div");
         card.className = "card-contato";
 
-        const telefoneHtml = contato.telefone ? `<div>Tel: ${contato.telefone}</div>` : "";
-        const enderecoHtml = contato.endereco ? `<div>${contato.endereco}</div>` : "";
-        const observacoesHtml = contato.observacoes ? `<div class="contato-observacoes">${contato.observacoes}</div>` : "";
-        const categoriaHtml = contato.categoria ? `<span class="contato-categoria">${contato.categoria}</span>` : "";
+        const telefoneHtml = contato.telefone ? `<div>Tel: ${escapeHtml(contato.telefone)}</div>` : "";
+        const enderecoHtml = contato.endereco ? `<div>${escapeHtml(contato.endereco)}</div>` : "";
+        const observacoesHtml = contato.observacoes ? `<div class="contato-observacoes">${escapeHtml(contato.observacoes)}</div>` : "";
+        const categoriaHtml = contato.categoria ? `<span class="contato-categoria">${escapeHtml(contato.categoria)}</span>` : "";
 
         const petsHtml = petsDoContato.length > 0
             ? '<ul class="lista-pets">' + petsDoContato.map((pet) => `
                 <li>
-                    <strong>${pet.nome}</strong>${pet.especie ? " (" + pet.especie + ")" : ""}
-                    ${pet.observacoes ? `<div class="pet-observacoes">${pet.observacoes}</div>` : ""}
+                    <strong>${escapeHtml(pet.nome)}</strong>${pet.especie ? " (" + escapeHtml(pet.especie) + ")" : ""}
+                    ${pet.observacoes ? `<div class="pet-observacoes">${escapeHtml(pet.observacoes)}</div>` : ""}
                     <button type="button" class="btn-excluir-pet" data-id="${pet.id}">Excluir pet</button>
                 </li>
             `).join("") + "</ul>"
@@ -110,7 +110,7 @@ function renderizarContatos() {
 
         card.innerHTML = `
             <div class="card-contato-cabecalho" data-id="${contato.id}">
-                <strong>${contato.nome}</strong>
+                <strong>${escapeHtml(contato.nome)}</strong>
                 ${categoriaHtml}
             </div>
 
