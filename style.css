@@ -314,7 +314,6 @@ button:active {
     margin-bottom: 4px;
     font-size: 0.9em;
     color: var(--jade);
-   cursor: pointer;
 }
 
 .item-semana {
@@ -742,6 +741,7 @@ button:active {
     }
 
     .coluna-semana {
+        cursor: pointer;
         font-size: 0.68em;
         padding: 3px;
     }
