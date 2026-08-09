@@ -284,7 +284,11 @@ async function renderizarSemana() {
                 const item = document.createElement("div");
                 item.className = "item-semana";
                 item.dataset.id = compromisso.id;
-                item.innerHTML = `<strong>${compromisso.hora_inicio ?? ""}</strong> ${compromisso.titulo}`;
+                const tituloCurto = compromisso.titulo.length > 12
+                    ? compromisso.titulo.slice(0, 12) + "…"
+                    : compromisso.titulo;
+                item.innerHTML = tituloCurto;
+                item.title = compromisso.titulo;
                 coluna.appendChild(item);
             });
         }
