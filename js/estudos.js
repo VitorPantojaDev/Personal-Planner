@@ -24,6 +24,13 @@ const formularioSessaoEl = document.getElementById("formulario-sessao");
 const formSessaoEl = document.getElementById("form-sessao");
 const mensagemErroSessaoEl = document.getElementById("mensagem-erro-sessao");
 
+const pesquisaCursosEl = document.getElementById("pesquisa-cursos");
+pesquisaCursosEl.addEventListener("input", () => {
+    const termo = pesquisaCursosEl.value.toLowerCase();
+    const filtrados = cursosCache.filter((c) => c.nome.toLowerCase().includes(termo));
+    renderizarCursos(filtrados);
+});
+
 let cursosCache = [];
 
 // ---------------------------------------------------------------
