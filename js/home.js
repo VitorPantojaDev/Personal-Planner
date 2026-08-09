@@ -61,6 +61,10 @@ function formatarDataISO(date) {
     return `${ano}-${mes}-${dia}`;
 }
 
+function formatarHora(hora) {
+    return hora ? hora.slice(0, 5) : "";
+}
+
 function obterInicioSemana(date) {
     // Semana começando na segunda-feira.
     const d = new Date(date);
@@ -217,7 +221,7 @@ function criarItemCompromisso(compromisso) {
     const item = document.createElement("div");
     item.className = "item-compromisso";
     item.innerHTML = `
-        <strong>${compromisso.hora_inicio ?? "sem horário"}</strong>
+        <strong>${formatarHora(compromisso.hora_inicio) || "sem horário"}</strong>
         - ${compromisso.titulo}
         ${compromisso.categoria ? `<em>(${compromisso.categoria})</em>` : ""}
         ${nomeContato ? `<div class="compromisso-contato">Com: ${nomeContato}</div>` : ""}
