@@ -284,8 +284,8 @@ async function renderizarSemana() {
                 const item = document.createElement("div");
                 item.className = "item-semana";
                 item.dataset.id = compromisso.id;
-                const tituloCurto = compromisso.titulo.length > 12
-                    ? compromisso.titulo.slice(0, 12) + "…"
+                const tituloCurto = compromisso.titulo.length > 8
+                    ? compromisso.titulo.slice(0, 8) + "…"
                     : compromisso.titulo;
                 item.innerHTML = tituloCurto;
                 item.title = compromisso.titulo;
