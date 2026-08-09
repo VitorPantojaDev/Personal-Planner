@@ -829,3 +829,25 @@ button:active {
     padding-top: 8px;
     border-top: 1px dashed #ccc;
 }
+
+#pesquisa-geral {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+#pesquisa-geral input,
+#pesquisa-cursos,
+#pesquisa-contatos {
+    flex: 1;
+    width: 100%;
+    padding: 6px;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+}
+
+.resultado-pesquisa-item {
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+}
