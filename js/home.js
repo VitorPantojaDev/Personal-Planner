@@ -105,7 +105,7 @@ async function executarPesquisa(termo) {
             const [ano, mes, dia] = c.data.split("-");
             html += `
                 <div class="resultado-pesquisa-item" data-tipo="compromisso" data-data="${c.data}">
-                    <strong>${c.titulo}</strong> — ${dia}/${mes}/${ano}
+                    <strong>${escapeHtml(c.titulo)}</strong> — ${dia}/${mes}/${ano}
                 </div>
             `;
         });
@@ -114,7 +114,7 @@ async function executarPesquisa(termo) {
     if (tarefasEncontradas.length > 0) {
         html += "<h3>Tarefas</h3>";
         tarefasEncontradas.forEach((t) => {
-            html += `<div class="resultado-pesquisa-item">${t.titulo}</div>`;
+            html += `<div class="resultado-pesquisa-item">${escapeHtml(t.titulo)}</div>`;
         });
     }
 
@@ -309,9 +309,9 @@ function criarItemCompromisso(compromisso) {
     item.className = "item-compromisso";
     item.innerHTML = `
         <strong>${formatarHora(compromisso.hora_inicio) || "sem horário"}</strong>
-        - ${compromisso.titulo}
-        ${compromisso.categoria ? `<em>(${compromisso.categoria})</em>` : ""}
-        ${nomeContato ? `<div class="compromisso-contato">Com: ${nomeContato}</div>` : ""}
+        - ${escapeHtml(compromisso.titulo)}
+        ${compromisso.categoria ? `<em>(${escapeHtml(compromisso.categoria)})</em>` : ""}
+        ${nomeContato ? `<div class="compromisso-contato">Com: ${escapeHtml(nomeContato)}</div>` : ""}
         <button type="button" class="btn-editar" data-id="${compromisso.id}">Editar</button>
         <button type="button" class="btn-excluir" data-id="${compromisso.id}">Excluir</button>
     `;
@@ -375,7 +375,7 @@ async function renderizarSemana() {
                 const tituloCurto = compromisso.titulo.length > 9
                     ? compromisso.titulo.slice(0, 9) + "…"
                     : compromisso.titulo;
-                item.innerHTML = tituloCurto;
+                item.innerHTML = escapeHtml(tituloCurto);
                 item.title = compromisso.titulo;
                 coluna.appendChild(item);
             });
@@ -443,7 +443,7 @@ async function renderizarMes() {
 
         const linhas = compromissosDoDia.slice(0, MAX_LINHAS).map((c) => {
             const t = c.titulo.length > 9 ? c.titulo.slice(0, 9) + "…" : c.titulo;
-            return `<span class="resumo-mes">${t}</span>`;
+            return `<span class="resumo-mes">${escapeHtml(t)}</span>`;
         }).join("");
 
         const restantes = compromissosDoDia.length - MAX_LINHAS;
@@ -768,7 +768,7 @@ function renderizarTarefas() {
         item.innerHTML = `
             <label class="tarefa-checkbox-linha">
                 <input type="checkbox" class="tarefa-checkbox" ${tarefa.feita ? "checked" : ""}>
-                <span class="tarefa-titulo">${tarefa.titulo}</span>
+                <span class="tarefa-titulo">${escapeHtml(tarefa.titulo)}</span>
             </label>
             <div class="tarefa-acoes">
                 <button type="button" class="btn-editar-tarefa" aria-label="Editar">&#9998;</button>
@@ -914,7 +914,7 @@ function abrirModalRevisao() {
         linha.className = "item-revisao";
         linha.dataset.id = tarefa.id;
         linha.innerHTML = `
-            <span class="tarefa-titulo">${tarefa.titulo}</span>
+            <span class="tarefa-titulo">${escapeHtml(tarefa.titulo)}</span>
             <div class="tarefa-acoes">
                 <button type="button" class="btn-renovar-uma">Renovar</button>
                 <button type="button" class="btn-excluir-uma">Excluir</button>
