@@ -48,6 +48,93 @@ const formularioEl = document.getElementById("formulario-compromisso");
 const formEl = document.getElementById("form-compromisso");
 const formTituloEl = document.getElementById("form-titulo");
 const mensagemErroFormEl = document.getElementById("mensagem-erro-form");
+const pesquisaInputEl = document.getElementById("pesquisa-input");
+const resultadosPesquisaEl = document.getElementById("resultados-pesquisa");
+const btnLimparPesquisaEl = document.getElementById("btn-limpar-pesquisa");
+let timeoutPesquisa = null;
+
+pesquisaInputEl.addEventListener("input", () => {
+    clearTimeout(timeoutPesquisa);
+    const termo = pesquisaInputEl.value.trim();
+
+    if (!termo) {
+        limparPesquisa();
+        return;
+    }
+
+    btnLimparPesquisaEl.style.display = "inline-block";
+    timeoutPesquisa = setTimeout(() => executarPesquisa(termo), 300);
+});
+
+btnLimparPesquisaEl.addEventListener("click", limparPesquisa);
+
+function limparPesquisa() {
+    pesquisaInputEl.value = "";
+    btnLimparPesquisaEl.style.display = "none";
+    resultadosPesquisaEl.classList.add("oculto");
+    resultadosPesquisaEl.innerHTML = "";
+    document.getElementById("controles-agenda").classList.remove("oculto");
+    agendaContainerEl.classList.remove("oculto");
+}
+
+async function executarPesquisa(termo) {
+    const { data: compromissosEncontrados, error } = await supabaseClient
+        .from("compromissos")
+        .select("*")
+        .ilike("titulo", `%${termo}%`)
+        .order("data", { ascending: true });
+
+    if (error) {
+        console.log(error);
+        return;
+    }
+
+    const tarefasEncontradas = tarefasCache.filter((t) =>
+        t.titulo.toLowerCase().includes(termo.toLowerCase())
+    );
+
+    document.getElementById("controles-agenda").classList.add("oculto");
+    agendaContainerEl.classList.add("oculto");
+    resultadosPesquisaEl.classList.remove("oculto");
+
+    let html = "";
+
+    if (compromissosEncontrados.length > 0) {
+        html += "<h3>Compromissos</h3>";
+        compromissosEncontrados.forEach((c) => {
+            const [ano, mes, dia] = c.data.split("-");
+            html += `
+                <div class="resultado-pesquisa-item" data-tipo="compromisso" data-data="${c.data}">
+                    <strong>${c.titulo}</strong> — ${dia}/${mes}/${ano}
+                </div>
+            `;
+        });
+    }
+
+    if (tarefasEncontradas.length > 0) {
+        html += "<h3>Tarefas</h3>";
+        tarefasEncontradas.forEach((t) => {
+            html += `<div class="resultado-pesquisa-item">${t.titulo}</div>`;
+        });
+    }
+
+    if (compromissosEncontrados.length === 0 && tarefasEncontradas.length === 0) {
+        html = "<p>Nenhum resultado encontrado.</p>";
+    }
+
+    resultadosPesquisaEl.innerHTML = html;
+}
+
+resultadosPesquisaEl.addEventListener("click", (evento) => {
+    const item = evento.target.closest(".resultado-pesquisa-item[data-tipo='compromisso']");
+    if (item) {
+        const [ano, mes, dia] = item.dataset.data.split("-").map(Number);
+        dataAtual = new Date(ano, mes - 1, dia);
+        visaoAtual = "dia";
+        limparPesquisa();
+        renderizarAgenda();
+    }
+});
 
 // ---------------------------------------------------------------
 // Helpers de data. Evitamos toISOString() para não sofrer com o
