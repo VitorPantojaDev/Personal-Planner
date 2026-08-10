@@ -324,3 +324,122 @@ document.getElementById("btn-sair").addEventListener("click", async () => {
 });
 
 carregarCursos();
+
+// ---------------------------------------------------------------
+// Cronômetro de estudos (tipo Pomodoro)
+// ---------------------------------------------------------------
+const cronometroMinutosEl = document.getElementById("cronometro-minutos");
+const cronometroDisplayEl = document.getElementById("cronometro-display");
+const cronometroStatusEl = document.getElementById("cronometro-status");
+const btnCronometroIniciarEl = document.getElementById("btn-cronometro-iniciar");
+const btnCronometroPausarEl = document.getElementById("btn-cronometro-pausar");
+const btnCronometroZerarEl = document.getElementById("btn-cronometro-zerar");
+
+let cronometroIntervalo = null;
+let cronometroSegundosRestantes = 0;
+let cronometroSegundosTotais = 0;
+let audioContextoCronometro = null;
+
+function formatarTempoCronometro(segundos) {
+    const m = Math.floor(segundos / 60).toString().padStart(2, "0");
+    const s = Math.floor(segundos % 60).toString().padStart(2, "0");
+    return `${m}:${s}`;
+}
+
+function atualizarDisplayCronometro() {
+    cronometroDisplayEl.textContent = formatarTempoCronometro(cronometroSegundosRestantes);
+    const decorrido = cronometroSegundosTotais - cronometroSegundosRestantes;
+    cronometroStatusEl.textContent = `Tempo decorrido: ${formatarTempoCronometro(decorrido)}`;
+}
+
+function pararCronometro() {
+    if (cronometroIntervalo) {
+        clearInterval(cronometroIntervalo);
+        cronometroIntervalo = null;
+    }
+    btnCronometroIniciarEl.disabled = false;
+    btnCronometroPausarEl.disabled = true;
+}
+
+function tocarAlarmeCronometro() {
+    try {
+        if (!audioContextoCronometro) {
+            audioContextoCronometro = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        const duracaoBip = 0.35;
+        for (let i = 0; i < 3; i++) {
+            const osc = audioContextoCronometro.createOscillator();
+            const ganho = audioContextoCronometro.createGain();
+            osc.connect(ganho);
+            ganho.connect(audioContextoCronometro.destination);
+            osc.type = "sine";
+            osc.frequency.value = 880;
+
+            const inicio = audioContextoCronometro.currentTime + i * (duracaoBip + 0.15);
+            ganho.gain.setValueAtTime(0.2, inicio);
+            ganho.gain.exponentialRampToValueAtTime(0.001, inicio + duracaoBip);
+
+            osc.start(inicio);
+            osc.stop(inicio + duracaoBip);
+        }
+    } catch (erro) {
+        console.log("Não foi possível tocar o alarme:", erro);
+    }
+}
+
+btnCronometroIniciarEl.addEventListener("click", () => {
+    if (cronometroIntervalo) return;
+
+    // Cria o contexto de áudio já aqui (dentro do clique do usuário),
+    // pois navegadores bloqueiam som iniciado fora de uma ação direta.
+    if (!audioContextoCronometro) {
+        audioContextoCronometro = new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    if (cronometroSegundosRestantes === 0) {
+        const minutos = parseFloat(cronometroMinutosEl.value) || 25;
+        cronometroSegundosTotais = Math.round(minutos * 60);
+        cronometroSegundosRestantes = cronometroSegundosTotais;
+    }
+
+    cronometroMinutosEl.disabled = true;
+    btnCronometroIniciarEl.disabled = true;
+    btnCronometroPausarEl.disabled = false;
+
+    cronometroIntervalo = setInterval(() => {
+        cronometroSegundosRestantes--;
+        atualizarDisplayCronometro();
+
+        if (cronometroSegundosRestantes <= 0) {
+            pararCronometro();
+            tocarAlarmeCronometro();
+            cronometroStatusEl.textContent = "Tempo esgotado!";
+            cronometroSegundosRestantes = 0;
+        }
+    }, 1000);
+
+    atualizarDisplayCronometro();
+});
+
+btnCronometroPausarEl.addEventListener("click", () => {
+    const decorrido = cronometroSegundosTotais - cronometroSegundosRestantes;
+    pararCronometro();
+    cronometroStatusEl.textContent = `Pausado — ${formatarTempoCronometro(decorrido)} decorridos.`;
+});
+
+btnCronometroZerarEl.addEventListener("click", () => {
+    pararCronometro();
+    cronometroSegundosRestantes = 0;
+    cronometroSegundosTotais = 0;
+    cronometroMinutosEl.disabled = false;
+    const minutos = parseFloat(cronometroMinutosEl.value) || 0;
+    cronometroDisplayEl.textContent = formatarTempoCronometro(minutos * 60);
+    cronometroStatusEl.textContent = "";
+});
+
+cronometroMinutosEl.addEventListener("input", () => {
+    if (!cronometroIntervalo && cronometroSegundosRestantes === 0) {
+        const minutos = parseFloat(cronometroMinutosEl.value) || 0;
+        cronometroDisplayEl.textContent = formatarTempoCronometro(minutos * 60);
+    }
+});
