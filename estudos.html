@@ -3,96 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estudos</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#173625">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Contatos</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@500;600;700&family=Noto+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Estudos</h1>
+    <h1>Contatos</h1>
     <p id="email-usuario"></p>
 
     <nav id="menu-principal">
         <a href="home.html">Agenda</a>
-        <span>Estudos</span>
-        <a href="contatos.html">Contatos</a>
+        <a href="estudos.html">Estudos</a>
+        <span>Contatos</span>
     </nav>
 
     <hr>
 
-    <input type="text" id="pesquisa-cursos" placeholder="Pesquisar curso...">
-    
-    <div id="lista-cursos">Carregando cursos...</div>
+    <input type="text" id="pesquisa-contatos" placeholder="Pesquisar contato ou pet...">
+
+    <div id="lista-contatos">Carregando contatos...</div>
 
     <br>
 
-    <button id="btn-novo-curso">Novo curso</button>
+    <button id="btn-novo-contato">Novo contato</button>
 
-    <div id="formulario-curso" style="display:none;">
-        <h3 id="form-curso-titulo">Novo curso</h3>
+    <div id="formulario-contato" style="display:none;">
+        <h3 id="form-contato-titulo">Novo contato</h3>
 
-        <form id="form-curso">
-            <input type="hidden" id="curso-id">
+        <form id="form-contato">
+            <input type="hidden" id="contato-id">
 
             <div>
-                <label for="curso-nome">Nome:</label>
-                <input type="text" id="curso-nome" required>
+                <label for="contato-nome">Nome:</label>
+                <input type="text" id="contato-nome" required>
             </div>
 
             <div>
-                <label for="curso-carga-total">Carga horária total (horas):</label>
-                <input type="number" id="curso-carga-total" min="0" step="0.5" required>
+                <label for="contato-telefone">Telefone:</label>
+                <input type="text" id="contato-telefone">
             </div>
 
             <div>
-                <label for="curso-data-limite">Data limite:</label>
-                <input type="date" id="curso-data-limite">
+                <label for="contato-endereco">Endereço:</label>
+                <input type="text" id="contato-endereco">
             </div>
 
             <div>
-                <label for="curso-link">Link (curso online, material, etc.):</label>
-                <input type="url" id="curso-link" placeholder="https://...">
+                <label for="contato-categoria">Categoria:</label>
+                <input type="text" id="contato-categoria" placeholder="cliente, pessoal...">
             </div>
 
             <div>
-                <label for="curso-observacoes">Observações:</label>
-                <textarea id="curso-observacoes" rows="3"></textarea>
+                <label for="contato-observacoes">Observações:</label>
+                <textarea id="contato-observacoes" rows="3"></textarea>
             </div>
 
             <button type="submit">Salvar</button>
-            <button type="button" id="btn-cancelar-curso">Cancelar</button>
+            <button type="button" id="btn-cancelar-contato">Cancelar</button>
         </form>
 
-        <p id="mensagem-erro-curso" style="color: red;"></p>
+        <p id="mensagem-erro-contato" style="color: red;"></p>
     </div>
 
-    <div id="formulario-sessao" style="display:none;">
-        <h3>Registrar sessão de estudo</h3>
+    <div id="formulario-pet" style="display:none;">
+        <h3>Novo pet</h3>
 
-        <form id="form-sessao">
-            <input type="hidden" id="sessao-curso-id">
+        <form id="form-pet">
+            <input type="hidden" id="pet-contato-id">
 
             <div>
-                <label for="sessao-horas">Horas estudadas:</label>
-                <input type="number" id="sessao-horas" min="0.1" step="0.1" required>
+                <label for="pet-nome">Nome:</label>
+                <input type="text" id="pet-nome" required>
             </div>
 
             <div>
-                <label for="sessao-data">Data:</label>
-                <input type="date" id="sessao-data" required>
+                <label for="pet-especie">Espécie:</label>
+                <input type="text" id="pet-especie" placeholder="cão, gato...">
             </div>
 
             <div>
-                <label for="sessao-observacao">Observação:</label>
-                <input type="text" id="sessao-observacao">
+                <label for="pet-observacoes">Observações:</label>
+                <textarea id="pet-observacoes" rows="2"></textarea>
             </div>
 
-            <button type="submit">Registrar</button>
-            <button type="button" id="btn-cancelar-sessao">Cancelar</button>
+            <button type="submit">Salvar</button>
+            <button type="button" id="btn-cancelar-pet">Cancelar</button>
         </form>
 
-        <p id="mensagem-erro-sessao" style="color: red;"></p>
+        <p id="mensagem-erro-pet" style="color: red;"></p>
     </div>
 
     <hr>
@@ -101,6 +104,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabaseClient.js"></script>
-    <script src="js/estudos.js"></script>
+    <script src="js/contatos.js"></script>
 </body>
 </html>
