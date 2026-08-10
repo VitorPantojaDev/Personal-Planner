@@ -96,12 +96,11 @@ hr {
     font-size: 0.85em;
 }
 
-.enso {
-    width: 44px;
-    height: 44px;
-    color: var(--dourado);
-    flex-shrink: 0;
-    transform: rotate(-12deg);
+.marca-icone {
+   width: 44px;
+   height: 44px;
+   border-radius: 7px;
+   flex-shrink: 0;
 }
 
 /* ---------- Botões, geral ---------- */
