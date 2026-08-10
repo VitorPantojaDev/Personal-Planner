@@ -125,23 +125,23 @@ button:active {
     transform: scale(0.97);
 }
 
+.rodape-acoes {
+   display: flex;
+   align-items: center;
+   gap: 10px;
+   flex-wrap: wrap;
+}
+
 #btn-cancelar-compromisso,
 #btn-cancelar-curso,
 #btn-cancelar-sessao,
 #btn-cancelar-contato,
 .btn-excluir,
 .btn-excluir-tarefa,
-.btn-excluir-uma,
-#btn-sair {
+.btn-excluir-uma {
     background: transparent;
     color: var(--vermelhao);
     border-color: var(--vermelhao);
-}
-
-#btn-sair {
-    background: transparent;
-    color: var(--tinta-suave);
-    border-color: rgba(107, 100, 85, 0.4);
 }
 
 #btn-cancelar-compromisso:hover,
@@ -855,9 +855,6 @@ button:active {
 
 
 /* ---------- Botão de backup ---------- */
-#btn-backup {
-    margin-right: 8px;
-}
 
 #btn-backup:disabled {
     opacity: 0.6;
