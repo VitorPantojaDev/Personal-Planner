@@ -851,3 +851,14 @@ button:active {
     border-bottom: 1px solid #eee;
     cursor: pointer;
 }
+
+
+/* ---------- Botão de backup ---------- */
+#btn-backup {
+    margin-right: 8px;
+}
+
+#btn-backup:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
