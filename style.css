@@ -352,6 +352,7 @@ button:active {
 
 .celula-mes {
     aspect-ratio: 1;
+    min-width: 0;
     border: 1px solid rgba(43, 40, 32, 0.12);
     border-radius: 6px;
     padding: 5px;
