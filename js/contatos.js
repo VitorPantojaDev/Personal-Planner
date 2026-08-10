@@ -10,6 +10,13 @@ async function protegerPagina() {
 }
 protegerPagina();
 
+function formatarLinkWhatsapp(telefone) {
+    const digitos = telefone.replace(/\D/g, "");
+    if (!digitos) return null;
+    const comCodigoPais = digitos.length <= 11 ? "55" + digitos : digitos;
+    return 'https://wa.me/${comCodigoPais}';
+}
+
 // ---------------------------------------------------------------
 // Elementos
 // ---------------------------------------------------------------
@@ -93,8 +100,14 @@ function renderizarContatos() {
         const card = document.createElement("div");
         card.className = "card-contato";
 
-        const telefoneHtml = contato.telefone ? `<div>Tel: ${escapeHtml(contato.telefone)}</div>` : "";
-        const enderecoHtml = contato.endereco ? `<div>${escapeHtml(contato.endereco)}</div>` : "";
+        const linkWhatsapp = contato.telefone ? formatarLinkWhatsapp(contato.telefone) : null;
+        const telefoneHtml = contato.telefone
+            ? `<div>Tel: <a href="${linkWhatsapp}" target="_blank" rel="noopener">${escapeHtml(contato.telefone)}</a></div>` : "";
+
+        const linkMaps = contato.endereco
+            ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(contato.endereco)}` : null;
+        const enderecoHtml = contato.endereco
+            ? `<div><a href="${linkMaps}" target="_blank" rel="noopener">${escapeHtml(contato.endereco)}</a></div>` : "";
         const observacoesHtml = contato.observacoes ? `<div class="contato-observacoes">${escapeHtml(contato.observacoes)}</div>` : "";
         const categoriaHtml = contato.categoria ? `<span class="contato-categoria">${escapeHtml(contato.categoria)}</span>` : "";
 
