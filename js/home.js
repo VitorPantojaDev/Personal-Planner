@@ -713,6 +713,40 @@ document.getElementById("btn-sair").addEventListener("click", async () => {
     window.location.href = "index.html";
 });
 
+document.getElementById("btn-trocar-senha").addEventListener("click", () => {
+    document.getElementById("formulario-senha").style.display = "block";
+});
+
+document.getElementById("btn-cancelar-senha").addEventListener("click", () => {
+    document.getElementById("formulario-senha").style.display = "none";
+    document.getElementById("form-trocar-senha").reset();
+    document.getElementById("mensagem-senha").textContent = "";
+});
+
+document.getElementById("form-trocar-senha").addEventListener("submit", async (evento) => {
+    evento.preventDefault();
+
+    const novaSenha = document.getElementById("nova-senha").value;
+    const confirmarSenha = document.getElementById("confirmar-senha").value;
+    const mensagem = document.getElementById("mensagem-senha");
+    mensagem.textContent = "";
+
+    if (novaSenha !== confirmarSenha) {
+        mensagem.textContent = "As senhas não coincidem.";
+        return;
+    }
+
+    const { error } = await supabaseClient.auth.updateUser({ password: novaSenha });
+
+    if (error) {
+        mensagem.textContent = "Erro ao trocar senha: " + error.message;
+        return;
+    }
+
+    mensagem.textContent = "Senha alterada com sucesso!";
+    document.getElementById("form-trocar-senha").reset();
+});
+
 // ---------------------------------------------------------------
 // Backup: baixa um .json com todos os dados do usuário logado,
 // como rede de segurança independente do Supabase.
