@@ -713,6 +713,48 @@ document.getElementById("btn-sair").addEventListener("click", async () => {
     window.location.href = "index.html";
 });
 
+// ---------------------------------------------------------------
+// Backup: baixa um .json com todos os dados do usuário logado,
+// como rede de segurança independente do Supabase.
+// ---------------------------------------------------------------
+document.getElementById("btn-backup").addEventListener("click", baixarBackup);
+
+async function baixarBackup() {
+    const btn = document.getElementById("btn-backup");
+    const textoOriginal = btn.textContent;
+    btn.textContent = "Gerando...";
+    btn.disabled = true;
+
+    const tabelas = ["compromissos", "contatos", "pets", "cursos", "sessoes_estudo", "tarefas_semana"];
+    const backup = { gerado_em: new Date().toISOString() };
+
+    for (const tabela of tabelas) {
+        const { data, error } = await supabaseClient.from(tabela).select("*");
+        if (error) {
+            alert(`Erro ao gerar backup (tabela ${tabela}): ${error.message}`);
+            btn.textContent = textoOriginal;
+            btn.disabled = false;
+            return;
+        }
+        backup[tabela] = data;
+    }
+
+    const conteudo = JSON.stringify(backup, null, 2);
+    const blob = new Blob([conteudo], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `personal-planner-backup-${formatarDataISO(new Date())}.json`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+
+    btn.textContent = textoOriginal;
+    btn.disabled = false;
+}
+
 // =================================================================
 // TAREFAS DA SEMANA
 // Lista de tarefas recorrentes (checklist), sem data fixa de
