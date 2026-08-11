@@ -927,3 +927,13 @@ button:active {
     color: #888;
     font-size: 0.85em;
 }
+
+#cronometro-relogio {
+    display: block;
+    margin: 8px auto;
+}
+
+#ponteiro-segundos,
+#ponteiro-minutos {
+    transition: transform 0.2s linear;
+}
