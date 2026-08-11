@@ -898,3 +898,11 @@ button:active {
     justify-content: center;
     gap: 8px;
 }
+
+.link-google-agenda {
+    display: inline-block;
+    font-size: 0.8em;
+    margin-right: 8px;
+    color: #2c5f8a;
+    text-decoration: none;
+}
