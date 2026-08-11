@@ -937,3 +937,117 @@ button:active {
 #ponteiro-minutos {
     transition: transform 0.2s linear;
 }
+
+/* ---------- Seletor de quadro ---------- */
+#seletor-quadro {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+#select-quadro {
+    flex: 1;
+    min-width: 120px;
+    padding: 6px;
+}
+
+/* ---------- Quadro: duas colunas ---------- */
+#quadro-atual {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.coluna-lista {
+    flex: 1;
+    min-width: 220px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.coluna-lista h3 {
+    margin-top: 0;
+    font-size: 1em;
+    border-bottom: 1px dashed #ccc;
+    padding-bottom: 6px;
+}
+
+.lista-itens-ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 10px 0;
+}
+
+.lista-itens-ul li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 0.9em;
+}
+
+.item-texto {
+    flex: 1;
+    word-break: break-word;
+}
+
+.item-acoes {
+    display: flex;
+    gap: 2px;
+    flex-shrink: 0;
+}
+
+.item-acoes button {
+    font-size: 0.75em;
+    padding: 3px 6px;
+    line-height: 1;
+}
+
+.item-acoes button:disabled {
+    opacity: 0.3;
+    cursor: default;
+}
+
+.item-vazio {
+    color: #999;
+    font-style: italic;
+    font-size: 0.85em;
+}
+
+.form-add-item {
+    display: flex;
+    gap: 6px;
+}
+
+.form-add-item input {
+    flex: 1;
+    padding: 6px;
+}
+
+/* ---------- Formulário de novo quadro ---------- */
+#formulario-quadro {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+}
+
+#formulario-quadro div {
+    margin-bottom: 10px;
+}
+
+#formulario-quadro label {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 0.9em;
+}
+
+#formulario-quadro input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 6px;
+}
