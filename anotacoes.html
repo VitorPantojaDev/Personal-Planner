@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#173625">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Anotações</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Anotações</h1>
+    <p id="email-usuario"></p>
+
+    <nav id="menu-principal">
+        <a href="home.html">Agenda</a>
+        <span>Anotações</span>
+        <a href="contatos.html">Contatos</a>
+        <a href="estudos.html">Estudos</a>
+        <a href="listas.html">Listas</a>
+        
+    </nav>
+
+    <hr>
+
+    <input type="text" id="pesquisa-anotacoes" placeholder="Pesquisar anotação...">
+
+    <div id="lista-anotacoes">Carregando anotações...</div>
+
+    <button type="button" id="btn-nova-anotacao">Nova anotação</button>
+
+    <div id="editor-anotacao" class="oculto">
+        <input type="hidden" id="anotacao-id">
+
+        <input type="text" id="anotacao-titulo" placeholder="Título">
+        <textarea id="anotacao-conteudo" rows="12" placeholder="Escreva aqui..."></textarea>
+
+        <div id="anotacao-info"></div>
+
+        <div id="anotacao-botoes">
+            <button type="button" id="btn-salvar-anotacao">Salvar</button>
+            <button type="button" id="btn-fechar-anotacao">Fechar</button>
+            <button type="button" id="btn-excluir-anotacao" class="oculto">Excluir</button>
+        </div>
+
+        <p id="mensagem-erro-anotacao" style="color: red;"></p>
+    </div>
+
+    <hr>
+
+    <button type="button" id="btn-sair">Sair</button>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabaseClient.js"></script>
+    <script src="js/anotacoes.js"></script>
+</body>
+</html>
