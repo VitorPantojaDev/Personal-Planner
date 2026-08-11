@@ -1051,3 +1051,72 @@ button:active {
     box-sizing: border-box;
     padding: 6px;
 }
+
+/* ---------- Lista de anotações ---------- */
+#lista-anotacoes {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.card-anotacao {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px 12px;
+    cursor: pointer;
+}
+
+.anotacao-preview {
+    font-size: 0.85em;
+    color: #666;
+    margin-top: 4px;
+}
+
+.anotacao-data {
+    font-size: 0.75em;
+    color: #999;
+    margin-top: 4px;
+}
+
+/* ---------- Editor ---------- */
+#editor-anotacao {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 12px;
+}
+
+#anotacao-titulo {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px;
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+#anotacao-conteudo {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px;
+    font-family: inherit;
+    resize: vertical;
+    margin-bottom: 6px;
+}
+
+#anotacao-info {
+    font-size: 0.8em;
+    color: #999;
+    margin-bottom: 8px;
+}
+
+#anotacao-botoes {
+    display: flex;
+    gap: 8px;
+}
+
+#btn-excluir-anotacao {
+    background: #c0392b;
+    margin-left: auto;
+}
