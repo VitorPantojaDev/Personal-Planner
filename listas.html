@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#173625">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Listas</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Listas</h1>
+    <p id="email-usuario"></p>
+
+    <nav id="menu-principal">
+        <a href="home.html">Agenda</a>
+        <a href="estudos.html">Estudos</a>
+        <a href="contatos.html">Contatos</a>
+        <span>Listas</span>
+    </nav>
+
+    <hr>
+
+    <div id="seletor-quadro">
+        <select id="select-quadro"></select>
+        <button type="button" id="btn-novo-quadro">Nova lista</button>
+        <button type="button" id="btn-excluir-quadro">Excluir esta lista</button>
+    </div>
+
+    <div id="formulario-quadro" class="oculto">
+        <h3>Nova lista</h3>
+        <form id="form-quadro">
+            <div>
+                <label for="quadro-nome">Nome da lista:</label>
+                <input type="text" id="quadro-nome" placeholder="ex.: Livros" required>
+            </div>
+            <div>
+                <label for="quadro-coluna-esquerda">Nome da coluna 1:</label>
+                <input type="text" id="quadro-coluna-esquerda" placeholder="ex.: Pra ler" required>
+            </div>
+            <div>
+                <label for="quadro-coluna-direita">Nome da coluna 2:</label>
+                <input type="text" id="quadro-coluna-direita" placeholder="ex.: Lidos em 2026" required>
+            </div>
+            <button type="submit">Criar</button>
+            <button type="button" id="btn-cancelar-quadro">Cancelar</button>
+        </form>
+    </div>
+
+    <div id="quadro-atual" class="oculto">
+        <div class="coluna-lista" data-coluna="esquerda">
+            <h3 id="titulo-coluna-esquerda"></h3>
+            <ul id="itens-esquerda" class="lista-itens-ul"></ul>
+            <form class="form-add-item" data-coluna="esquerda">
+                <input type="text" placeholder="Adicionar item..." required>
+                <button type="submit">+</button>
+            </form>
+        </div>
+
+        <div class="coluna-lista" data-coluna="direita">
+            <h3 id="titulo-coluna-direita"></h3>
+            <ul id="itens-direita" class="lista-itens-ul"></ul>
+            <form class="form-add-item" data-coluna="direita">
+                <input type="text" placeholder="Adicionar item..." required>
+                <button type="submit">+</button>
+            </form>
+        </div>
+    </div>
+
+    <p id="sem-listas" class="oculto agenda-vazio">Nenhuma lista criada ainda. Clique em "Nova lista" para começar.</p>
+
+    <hr>
+
+    <button type="button" id="btn-sair">Sair</button>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabaseClient.js"></script>
+    <script src="js/listas.js"></script>
+</body>
+</html>
