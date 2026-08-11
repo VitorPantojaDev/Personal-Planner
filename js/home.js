@@ -312,7 +312,6 @@ function criarItemCompromisso(compromisso) {
         - ${escapeHtml(compromisso.titulo)}
         ${compromisso.categoria ? `<em>(${escapeHtml(compromisso.categoria)})</em>` : ""}
         ${nomeContato ? `<div class="compromisso-contato">Com: ${escapeHtml(nomeContato)}</div>` : ""}
-        <a class="link-google-agenda" href="${gerarLinkGoogleAgenda(compromisso)}" target="_blank" rel="noopener">📅 Google Agenda</a>
         <button type="button" class="btn-editar" data-id="${compromisso.id}">Editar</button>
         <button type="button" class="btn-excluir" data-id="${compromisso.id}">Excluir</button>
     `;
@@ -540,6 +539,7 @@ function abrirFormulario(compromisso = null) {
         document.getElementById("repetir-compromisso").checked = false;
         document.getElementById("repetir-opcoes").style.display = "none";
         document.querySelectorAll(".dia-semana-check").forEach((cb) => (cb.checked = false));
+        document.getElementById("adicionar-google-agenda").checked = false;
         // Sugere a data que está sendo visualizada como padrão
         document.getElementById("data").value = formatarDataISO(dataAtual);
     }
@@ -663,6 +663,10 @@ formEl.addEventListener("submit", async (evento) => {
     }
 
     fecharFormulario();
+    if (document.getElementById("adicionar-google-agenda").checked) {
+        const dataParaLink = document.getElementById("data").value;
+        window.open(gerarLinkGoogleAgenda({ ...dadosBase, data: dataParaLink }), "_blank");
+    }
     renderizarAgenda();
 });
 
