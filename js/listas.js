@@ -46,20 +46,32 @@ async function carregarQuadros() {
     }
 
     semListasEl.classList.add("oculto");
-    selectQuadroEl.innerHTML = data.map((q) =>
+    const opcaoPlaceholder = '<option value="">Selecione uma lista...</option>';
+    selectQuadroEl.innerHTML = opcaoPlaceholder + data.map((q) =>
         `<option value="${q.id}">${escapeHtml(q.nome)}</option>`
     ).join("");
 
+    // Se a lista que estava selecionada foi excluída ou nenhuma foi escolhida
+    // ainda, não abre nenhuma automaticamente — fica só o seletor visível.
     if (!quadroSelecionadoId || !data.find((q) => q.id === quadroSelecionadoId)) {
-        quadroSelecionadoId = data[0].id;
+        quadroSelecionadoId = null;
+        quadroAtualEl.classList.add("oculto");
+        selectQuadroEl.value = "";
+        return;
     }
+    
     selectQuadroEl.value = quadroSelecionadoId;
-
     await carregarItens();
 }
 
 selectQuadroEl.addEventListener("change", async () => {
-    quadroSelecionadoId = selectQuadroEl.value;
+    quadroSelecionadoId = selectQuadroEl.value || null;
+
+    if (!quadroSelecionadoId) {
+        quadroAtualEl.classList.add("oculto");
+        return;
+    }
+    
     await carregarItens();
 });
 
