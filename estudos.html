@@ -33,6 +33,17 @@
             <input type="number" id="cronometro-minutos" min="1" value="25">
         </div>
 
+        <svg id="cronometro-relogio" viewBox="0 0 200 200" width="160" height="160">
+            <circle cx="100" cy="100" r="94" fill="none" stroke="#1c4530" stroke-width="4"/>
+            <circle cx="100" cy="30" r="2.5" fill="#1c4530"/>
+            <circle cx="170" cy="100" r="2.5" fill="#1c4530"/>
+            <circle cx="100" cy="170" r="2.5" fill="#1c4530"/>
+            <circle cx="30" cy="100" r="2.5" fill="#1c4530"/>
+            <line id="ponteiro-minutos" x1="100" y1="100" x2="100" y2="38" stroke="#1c4530" stroke-width="5" stroke-linecap="round"/>
+            <line id="ponteiro-segundos" x1="100" y1="100" x2="100" y2="22" stroke="#d4a843" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="100" cy="100" r="5" fill="#1c4530"/>
+        </svg>
+            
         <div id="cronometro-display">25:00</div>
         <div id="cronometro-status"></div>
 
