@@ -911,3 +911,17 @@ button:active {
     margin-bottom: 10px;
     font-weight: normal;
 }
+
+#btn-toggle-cronometro {
+    width: 100%;
+    text-align: left;
+    background: white;
+    color: #1c4530;
+    font-weight: bold;
+}
+
+#cronometro-mini {
+    font-weight: normal;
+    color: #888;
+    font-size: 0.85em;
+}
