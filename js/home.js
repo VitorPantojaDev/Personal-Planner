@@ -579,6 +579,8 @@ document.getElementById("repetir-compromisso").addEventListener("change", (event
 });
 
 formEl.addEventListener("submit", async (evento) => {
+    const abrirGoogleAgenda = document.getElementById("adicionar-google-agenda").checked;
+    const janelaGoogleAgenda = abrirGoogleAgenda ? window.open("", "_blank") : null;
     evento.preventDefault();
 
     mensagemErroFormEl.textContent = "";
@@ -663,9 +665,9 @@ formEl.addEventListener("submit", async (evento) => {
     }
 
     fecharFormulario();
-    if (document.getElementById("adicionar-google-agenda").checked) {
+    if (janelaGoogleAgenda) {
         const dataParaLink = document.getElementById("data").value;
-        window.open(gerarLinkGoogleAgenda({ ...dadosBase, data: dataParaLink }), "_blank");
+        janelaGoogleAgenda.location.href = gerarLinkGoogleAgenda({ ...dadosBase, data: dataParaLink });
     }
     renderizarAgenda();
 });
