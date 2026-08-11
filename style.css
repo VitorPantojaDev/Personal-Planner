@@ -906,3 +906,8 @@ button:active {
     color: #2c5f8a;
     text-decoration: none;
 }
+
+#google-agenda-linha {
+    margin-bottom: 10px;
+    font-weight: normal;
+}
