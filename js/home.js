@@ -312,6 +312,7 @@ function criarItemCompromisso(compromisso) {
         - ${escapeHtml(compromisso.titulo)}
         ${compromisso.categoria ? `<em>(${escapeHtml(compromisso.categoria)})</em>` : ""}
         ${nomeContato ? `<div class="compromisso-contato">Com: ${escapeHtml(nomeContato)}</div>` : ""}
+        <a class="link-google-agenda" href="${gerarLinkGoogleAgenda(compromisso)}" target="_blank" rel="noopener">📅 Google Agenda</a>
         <button type="button" class="btn-editar" data-id="${compromisso.id}">Editar</button>
         <button type="button" class="btn-excluir" data-id="${compromisso.id}">Excluir</button>
     `;
@@ -1061,3 +1062,41 @@ renderizarAgenda();
     await carregarTarefas();
     await verificarAvisoSegundaFeira();
 })();
+
+function gerarLinkGoogleAgenda(compromisso) {
+    const [ano, mes, dia] = compromisso.data.split("-").map(Number);
+    let datas;
+
+    if (compromisso.hora_inicio) {
+        const [hIni, mIni] = compromisso.hora_inicio.slice(0, 5).split(":").map(Number);
+        const inicioObj = new Date(ano, mes - 1, dia, hIni, mIni);
+
+        let fimObj;
+        if (compromisso.hora_fim) {
+            const [hFim, mFim] = compromisso.hora_fim.slice(0, 5).split(":").map(Number);
+            fimObj = new Date(ano, mes - 1, dia, hFim, mFim);
+        } else {
+            fimObj = new Date(inicioObj);
+            fimObj.setHours(fimObj.getHours() + 1);
+        }
+
+        const paraGoogle = (d) => formatarDataISO(d).replaceAll("-", "") + "T" +
+            String(d.getHours()).padStart(2, "0") + String(d.getMinutes()).padStart(2, "0") + "00";
+
+        datas = `${paraGoogle(inicioObj)}/${paraGoogle(fimObj)}`;
+    } else {
+        // sem horário: evento de dia inteiro
+        const inicioData = compromisso.data.replaceAll("-", "");
+        const fimObj = new Date(ano, mes - 1, dia + 1);
+        datas = `${inicioData}/${formatarDataISO(fimObj).replaceAll("-", "")}`;
+    }
+
+    const params = new URLSearchParams({
+        action: "TEMPLATE",
+        text: compromisso.titulo,
+        dates: datas,
+        details: compromisso.descricao || "",
+    });
+
+    return `https://calendar.google.com/calendar/render?${params.toString()}`;
+}
