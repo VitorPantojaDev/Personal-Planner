@@ -346,6 +346,18 @@ function formatarTempoCronometro(segundos) {
     return `${m}:${s}`;
 }
 
+function atualizarPonteirosCronometro() {
+    const decorrido = cronometroSegundosTotais - cronometroSegundosRestantes;
+    const segundos = decorrido % 60;
+    const minutos = Math.floor(decorrido / 60) % 60;
+
+    const anguloSegundos = segundos * 6;
+    const anguloMinutos = minutos * 6 + segundos * 0.1; // avanço suave entre minutos
+
+    document.getElementById("ponteiro-segundos").setAttribute("transform", `rotate(${anguloSegundos} 100 100)`);
+    document.getElementById("ponteiro-minutos").setAttribute("transform", `rotate(${anguloMinutos} 100 100)`);
+}
+
 function atualizarDisplayCronometro() {
     cronometroDisplayEl.textContent = formatarTempoCronometro(cronometroSegundosRestantes);
     const decorrido = cronometroSegundosTotais - cronometroSegundosRestantes;
@@ -353,6 +365,7 @@ function atualizarDisplayCronometro() {
     document.getElementById("cronometro-mini").textContent = cronometroIntervalo
         ? `— ${formatarTempoCronometro(cronometroSegundosRestantes)}`
         : "";
+    atualizarPonteirosCronometro();
 }
 
 function pararCronometro() {
@@ -442,6 +455,8 @@ btnCronometroZerarEl.addEventListener("click", () => {
     const minutos = parseFloat(cronometroMinutosEl.value) || 0;
     cronometroDisplayEl.textContent = formatarTempoCronometro(minutos * 60);
     cronometroStatusEl.textContent = "";
+    document.getElementById("ponteiro-segundos").setAttribute("transform", "rotate(0 100 100)");
+    document.getElementById("ponteiro-minutos").setAttribute("transform", "rotate(0 100 100)");
 });
 
 cronometroMinutosEl.addEventListener("input", () => {
