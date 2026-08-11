@@ -959,6 +959,10 @@ button:active {
     flex-wrap: wrap;
 }
 
+#quadro-atual.oculto {
+   display: none;
+}
+
 .coluna-lista {
     flex: 1;
     min-width: 220px;
