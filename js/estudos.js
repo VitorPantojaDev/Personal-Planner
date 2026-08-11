@@ -350,6 +350,9 @@ function atualizarDisplayCronometro() {
     cronometroDisplayEl.textContent = formatarTempoCronometro(cronometroSegundosRestantes);
     const decorrido = cronometroSegundosTotais - cronometroSegundosRestantes;
     cronometroStatusEl.textContent = `Tempo decorrido: ${formatarTempoCronometro(decorrido)}`;
+    document.getElementById("cronometro-mini").textContent = cronometroIntervalo
+        ? `— ${formatarTempoCronometro(cronometroSegundosRestantes)}`
+        : "";
 }
 
 function pararCronometro() {
@@ -386,6 +389,10 @@ function tocarAlarmeCronometro() {
         console.log("Não foi possível tocar o alarme:", erro);
     }
 }
+
+document.getElementById("btn-toggle-cronometro").addEventListener("click", () => {
+    document.getElementById("cronometro-conteudo").classList.toggle("oculto");
+});
 
 btnCronometroIniciarEl.addEventListener("click", () => {
     if (cronometroIntervalo) return;
