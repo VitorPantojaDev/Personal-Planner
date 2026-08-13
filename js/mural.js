@@ -116,7 +116,15 @@ function abrirEditor(recado = null) {
     editorRecadoEl.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-document.getElementById("btn-novo-recado").addEventListener("click", () => abrirEditor());
+document.getElementById("btn-novo-recado").addEventListener("click", () => {
+    const meuRecado = recadosCache.find((r) => r.user_id === usuarioAtualId);
+    if (meuRecado) {
+        alert("Você já tem um recado publicado. Editando o seu recado existente.");
+        abrirEditor(meuRecado);
+    } else {
+        abrirEditor();
+    }
+});
 
 document.getElementById("btn-fechar-recado").addEventListener("click", () => {
     editorRecadoEl.classList.add("oculto");
