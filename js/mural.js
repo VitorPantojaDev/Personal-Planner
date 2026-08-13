@@ -1,3 +1,6 @@
+let usuarioAtualId = null;
+const MODERADOR_ID = "13b795b7-7b70-4109-9e67-a370c2480f41";
+
 async function protegerPagina() {
     const { data } = await supabaseClient.auth.getSession();
     if (!data.session) {
@@ -6,6 +9,7 @@ async function protegerPagina() {
     }
     document.getElementById("email-usuario").textContent =
         "Logado como: " + data.session.user.email;
+        usuarioAtualId = data.session.user.id;
 }
 protegerPagina();
 
@@ -26,7 +30,7 @@ let recadosCache = [];
 // ---------------------------------------------------------------
 async function carregarRecados() {
     const { data, error } = await supabaseClient
-        .from("recados_publicos")
+        .from("recados")
         .select("*")
         .order("atualizado_em", { ascending: false });
 
@@ -44,8 +48,8 @@ function renderizarLista() {
     const termo = pesquisaEl.value.toLowerCase();
     const filtradas = termo
         ? recadosCache.filter((a) =>
-            r.corpo.toLowerCase().includes(termo) ||
-            (r.corpo ?? "").toLowerCase().includes(termo))
+            a.corpo.toLowerCase().includes(termo) ||
+            (a.corpo ?? "").toLowerCase().includes(termo))
         : recadosCache;
 
     if (filtradas.length === 0) {
@@ -54,12 +58,12 @@ function renderizarLista() {
     }
 
     listaRecadosEl.innerHTML = filtradas.map((a) => {
-        const preview = (r.corpo || "").slice(0, 80).replace(/\n/g, " ");
-        const dataFormatada = new Date(r.atualizado_em).toLocaleDateString("pt-BR");
+        const preview = (a.corpo || "").slice(0, 80).replace(/\n/g, " ");
+        const dataFormatada = new Date(a.atualizado_em).toLocaleDateString("pt-BR");
         return `
             <div class="card-recado" data-id="${r.id}">
-                <strong>${escapeHtml(r.titulo)}</strong>
-                <div class="recado-preview">${escapeHtml(preview)}${(r.corpo || "").length > 80 ? "…" : ""}</div>
+                <strong>${escapeHtml(a.titulo)}</strong>
+                <div class="recado-preview">${escapeHtml(preview)}${(a.corpo || "").length > 80 ? "…" : ""}</div>
                 <div class="recado-data">Editado em ${dataFormatada}</div>
             </div>
         `;
@@ -71,7 +75,7 @@ pesquisaEl.addEventListener("input", renderizarLista);
 listaRecadosEl.addEventListener("click", (evento) => {
     const card = evento.target.closest(".card-recado");
     if (!card) return;
-    const recado = recadosCache.find((a) => r.id === card.dataset.id);
+    const recado = recadosCache.find((a) => a.id === card.dataset.id);
     if (recado) abrirEditor(recado);
 });
 
@@ -84,13 +88,26 @@ function abrirEditor(recado = null) {
     if (recado) {
         document.getElementById("recado-id").value = recado.id;
         document.getElementById("recado-titulo").value = recado.titulo;
-        document.getElementById("recado-corpo").value = recado.corpo|| "";
+        document.getElementById("recado-conteudo").value = recado.corpo|| "";
         recadoInfoEl.textContent = "Editado em " + new Date(recado.atualizado_em).toLocaleString("pt-BR");
+        const souDono = recado.user_id === usuarioAtualId;
+        const souModerador = usuarioAtualId === MODERADOR_ID;
+
+        document.getElementById("recado-titulo").disabled = !souDono;
+        document.getElementById("recado-conteudo").disabled = !souDono;
+        document.getElementById("btn-salvar-recado").classList.toggle("oculto", !souDono);
+
+        if (souDono || souModerador) {
+            btnExcluirEl.classList.remove("oculto");
+        } else {
+            btnExcluirEl.classList.add("oculto");
+        }
         btnExcluirEl.classList.remove("oculto");
     } else {
         document.getElementById("recado-id").value = "";
-        document.getElementById("recado-titulo").value = "";
-        document.getElementById("recado-corpo").value = "";
+        document.getElementById("recado-titulo").disabled = false;
+        document.getElementById("recado-conteudo").disabled = false;
+        document.getElementById("btn-salvar-recado").classList.remove("oculto");
         recadoInfoEl.textContent = "";
         btnExcluirEl.classList.add("oculto");
     }
@@ -120,11 +137,16 @@ document.getElementById("btn-salvar-recado").addEventListener("click", async () 
     const id = document.getElementById("recado-id").value;
     const dados = {
         titulo,
-        corpo: document.getElementById("recado-corpo").value,
+        corpo: document.getElementById("recado-conteudo").value,
         atualizado_em: new Date().toISOString(),
     };
 
     let resultado;
+
+    if (!id) {
+        dados.autor_email = (await supabaseClient.auth.getUser()).data.user.email;
+    }
+    
     if (id) {
         resultado = await supabaseClient.from("recados").update(dados).eq("id", id);
     } else {
@@ -137,7 +159,7 @@ document.getElementById("btn-salvar-recado").addEventListener("click", async () 
     }
 
     editorRecadoEl.classList.add("oculto");
-    await carregarRecado();
+    await carregarRecados();
 });
 
 btnExcluirEl.addEventListener("click", async () => {
