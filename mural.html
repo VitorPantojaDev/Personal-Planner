@@ -21,6 +21,32 @@
 
     <hr>
 
+    <input type="text" id="pesquisa-recados" placeholder="Recados, sugestões, avisos..">
+
+    <div id="lista-recados">Carregando recados...</div>
+
+    <button type="button" id="btn-novo-recado">Novo recado</button>
+
+    <div id="editor-recado" class="oculto">
+        <input type="hidden" id="recado-id">
+
+        <input type="text" id="recado-titulo" placeholder="Título">
+        <textarea id="recado-conteudo" rows="12" placeholder="Escreva aqui..."></textarea>
+
+        <div id="recado-info"></div>
+
+        <div id="recado-botoes">
+            <button type="button" id="btn-salvar-recado">Salvar</button>
+            <button type="button" id="btn-fechar-recado">Fechar</button>
+            <button type="button" id="btn-excluir-recado" class="oculto">Excluir</button>
+        </div>
+
+        <p id="mensagem-erro-recado" style="color: red;"></p>
+    </div>
+
+    <hr>
+    <hr>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabaseClient.js"></script>
     <script src="js/mural.js"></script>
