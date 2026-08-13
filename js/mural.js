@@ -44,8 +44,8 @@ function renderizarLista() {
     const termo = pesquisaEl.value.toLowerCase();
     const filtradas = termo
         ? recadosCache.filter((a) =>
-            a.titulo.toLowerCase().includes(termo) ||
-            (a.conteudo ?? "").toLowerCase().includes(termo))
+            r.corpo.toLowerCase().includes(termo) ||
+            (r.corpo ?? "").toLowerCase().includes(termo))
         : recadosCache;
 
     if (filtradas.length === 0) {
@@ -54,12 +54,12 @@ function renderizarLista() {
     }
 
     listaRecadosEl.innerHTML = filtradas.map((a) => {
-        const preview = (a.conteudo || "").slice(0, 80).replace(/\n/g, " ");
-        const dataFormatada = new Date(a.atualizado_em).toLocaleDateString("pt-BR");
+        const preview = (r.corpo || "").slice(0, 80).replace(/\n/g, " ");
+        const dataFormatada = new Date(r.atualizado_em).toLocaleDateString("pt-BR");
         return `
-            <div class="card-recado" data-id="${a.id}">
-                <strong>${escapeHtml(a.titulo)}</strong>
-                <div class="recado-preview">${escapeHtml(preview)}${(a.conteudo || "").length > 80 ? "…" : ""}</div>
+            <div class="card-recado" data-id="${r.id}">
+                <strong>${escapeHtml(r.titulo)}</strong>
+                <div class="recado-preview">${escapeHtml(preview)}${(r.corpo || "").length > 80 ? "…" : ""}</div>
                 <div class="recado-data">Editado em ${dataFormatada}</div>
             </div>
         `;
@@ -71,7 +71,7 @@ pesquisaEl.addEventListener("input", renderizarLista);
 listaRecadosEl.addEventListener("click", (evento) => {
     const card = evento.target.closest(".card-recado");
     if (!card) return;
-    const recado = recadosCache.find((a) => a.id === card.dataset.id);
+    const recado = recadosCache.find((a) => r.id === card.dataset.id);
     if (recado) abrirEditor(recado);
 });
 
@@ -84,13 +84,13 @@ function abrirEditor(recado = null) {
     if (recado) {
         document.getElementById("recado-id").value = recado.id;
         document.getElementById("recado-titulo").value = recado.titulo;
-        document.getElementById("recado-conteudo").value = recado.conteudo || "";
+        document.getElementById("recado-corpo").value = recado.corpo|| "";
         recadoInfoEl.textContent = "Editado em " + new Date(recado.atualizado_em).toLocaleString("pt-BR");
         btnExcluirEl.classList.remove("oculto");
     } else {
         document.getElementById("recado-id").value = "";
         document.getElementById("recado-titulo").value = "";
-        document.getElementById("recado-conteudo").value = "";
+        document.getElementById("recado-corpo").value = "";
         recadoInfoEl.textContent = "";
         btnExcluirEl.classList.add("oculto");
     }
@@ -120,7 +120,7 @@ document.getElementById("btn-salvar-recado").addEventListener("click", async () 
     const id = document.getElementById("recado-id").value;
     const dados = {
         titulo,
-        conteudo: document.getElementById("recado-conteudo").value,
+        corpo: document.getElementById("recado-corpo").value,
         atualizado_em: new Date().toISOString(),
     };
 
