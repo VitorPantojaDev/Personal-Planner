@@ -126,6 +126,7 @@ button:active {
 
 .rodape-acoes {
    display: flex;
+   justify-content: center;
    align-items: center;
    gap: 10px;
    flex-wrap: wrap;
@@ -390,6 +391,7 @@ button:active {
 /* ---------- Menu de navegação entre páginas ---------- */
 #menu-principal {
     display: flex;
+    justify-content: center;
     gap: 16px;
     margin: 14px 0 4px;
     font-size: 0.9em;
