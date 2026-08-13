@@ -60,6 +60,9 @@ function renderizarLista() {
     listaRecadosEl.innerHTML = filtradas.map((a) => {
         const preview = (a.corpo || "").slice(0, 80).replace(/\n/g, " ");
         const dataFormatada = new Date(a.atualizado_em).toLocaleDateString("pt-BR");
+        const seloModerador = a.user_id === MODERADOR_ID
+            ? '<span class="selo-moderador">Moderador</span>'
+            : "";
         return `
             <div class="card-recado" data-id="${a.id}">
                 <strong>${escapeHtml(a.titulo)}</strong>
@@ -150,11 +153,7 @@ document.getElementById("btn-salvar-recado").addEventListener("click", async () 
     };
 
     let resultado;
-
-    if (!id) {
-        dados.autor_email = (await supabaseClient.auth.getUser()).data.user.email;
-    }
-    
+   
     if (id) {
         resultado = await supabaseClient.from("recados").update(dados).eq("id", id);
     } else {
