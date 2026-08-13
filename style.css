@@ -1198,3 +1198,39 @@ button:active {
     color: #666;
     cursor: not-allowed;
 }
+
+.selo-moderador {
+    display: inline-block;
+    background: var(--jade);
+    color: var(--pergaminho);
+    font-size: 0.7em;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 10px;
+    vertical-align: middle;
+}
+
+.mural-intro {
+    background: rgba(255, 255, 255, 0.35);
+    border-left: 4px solid var(--jade);
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    font-size: 0.9em;
+    line-height: 1.6;
+}
+
+.mural-intro p {
+    margin: 0 0 10px 0;
+}
+
+.mural-intro p:last-child {
+    margin-bottom: 0;
+}
+
+.mural-aviso {
+    color: #a03a2c;
+    font-weight: bold;
+    border-top: 1px dashed rgba(160, 58, 44, 0.4);
+    padding-top: 10px;
+}
