@@ -65,7 +65,7 @@ function renderizarLista() {
             : "";
         return `
             <div class="card-recado" data-id="${a.id}">
-                <strong>${escapeHtml(a.titulo)}</strong>
+                <strong>${escapeHtml(a.titulo)}</strong> ${seloModerador}
                 <div class="recado-preview">${escapeHtml(preview)}${(a.corpo || "").length > 80 ? "…" : ""}</div>
                 <div class="recado-data">Editado em ${dataFormatada}</div>
             </div>
