@@ -61,7 +61,7 @@ function renderizarLista() {
         const preview = (a.corpo || "").slice(0, 80).replace(/\n/g, " ");
         const dataFormatada = new Date(a.atualizado_em).toLocaleDateString("pt-BR");
         return `
-            <div class="card-recado" data-id="${r.id}">
+            <div class="card-recado" data-id="${a.id}">
                 <strong>${escapeHtml(a.titulo)}</strong>
                 <div class="recado-preview">${escapeHtml(preview)}${(a.corpo || "").length > 80 ? "…" : ""}</div>
                 <div class="recado-data">Editado em ${dataFormatada}</div>
