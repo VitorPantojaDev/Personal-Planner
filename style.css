@@ -1140,3 +1140,61 @@ button:active {
     text-decoration: none;
     transition: background 0.15s ease, transform 0.1s ease;
 }
+
+/* ---------- Lista de recados ---------- */
+#lista-recados {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.card-recado {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px 12px;
+    cursor: pointer;
+}
+
+.recado-preview {
+    font-size: 0.85em;
+    color: #666;
+    margin-top: 4px;
+}
+
+.recado-data {
+    font-size: 0.75em;
+    color: #999;
+    margin-top: 4px;
+}
+
+#editor-recado {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 12px;
+}
+
+#recado-titulo {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px;
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+#recado-conteudo {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px;
+    font-family: inherit;
+    resize: vertical;
+}
+
+#recado-titulo:disabled,
+#recado-conteudo:disabled {
+    background: rgba(0, 0, 0, 0.04);
+    color: #666;
+    cursor: not-allowed;
+}
