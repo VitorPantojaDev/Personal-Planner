@@ -104,10 +104,11 @@ function abrirEditor(recado = null) {
             btnExcluirEl.classList.remove("oculto");
         } else {
             btnExcluirEl.classList.add("oculto");
-        }
-        btnExcluirEl.classList.remove("oculto");
+        }        
     } else {
         document.getElementById("recado-id").value = "";
+        document.getElementById("recado-titulo").value = "";
+        document.getElementById("recado-conteudo").value = "";
         document.getElementById("recado-titulo").disabled = false;
         document.getElementById("recado-conteudo").disabled = false;
         document.getElementById("btn-salvar-recado").classList.remove("oculto");
