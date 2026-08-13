@@ -36,17 +36,17 @@ async function carregarRecados() {
         return;
     }
 
-    anotacoesCache = data;
+    recadosCache = data;
     renderizarLista();
 }
 
 function renderizarLista() {
     const termo = pesquisaEl.value.toLowerCase();
     const filtradas = termo
-        ? anotacoesCache.filter((a) =>
+        ? recadosCache.filter((a) =>
             a.titulo.toLowerCase().includes(termo) ||
             (a.conteudo ?? "").toLowerCase().includes(termo))
-        : anotacoesCache;
+        : recadosCache;
 
     if (filtradas.length === 0) {
         listaRecadosEl.innerHTML = '<p class="agenda-vazio">Nenhum recado encontrado.</p>';
@@ -85,13 +85,13 @@ function abrirEditor(recado = null) {
         document.getElementById("recado-id").value = recado.id;
         document.getElementById("recado-titulo").value = recado.titulo;
         document.getElementById("recado-conteudo").value = recado.conteudo || "";
-        anotacaoInfoEl.textContent = "Editado em " + new Date(anotacao.atualizado_em).toLocaleString("pt-BR");
+        recadoInfoEl.textContent = "Editado em " + new Date(recado.atualizado_em).toLocaleString("pt-BR");
         btnExcluirEl.classList.remove("oculto");
     } else {
         document.getElementById("recado-id").value = "";
         document.getElementById("recado-titulo").value = "";
         document.getElementById("recado-conteudo").value = "";
-        anotacaoInfoEl.textContent = "";
+        recadoInfoEl.textContent = "";
         btnExcluirEl.classList.add("oculto");
     }
 
@@ -136,7 +136,7 @@ document.getElementById("btn-salvar-recado").addEventListener("click", async () 
         return;
     }
 
-    editorAnotacaoEl.classList.add("oculto");
+    editorRecadoEl.classList.add("oculto");
     await carregarRecado();
 });
 
@@ -153,7 +153,7 @@ btnExcluirEl.addEventListener("click", async () => {
         return;
     }
 
-    editorAnotacaoEl.classList.add("oculto");
+    editorRecadoEl.classList.add("oculto");
     await carregarRecados();
 });
 
