@@ -1258,13 +1258,21 @@ button:active {
 }
 
 #quadro-acoes-download {
-    margin-top: 10px;
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
 }
 
-/* ---------- Botões de baixar, genérico (Estudos/Contatos/Anotações/Agenda) ---------- */
+/* ---------- Botão de baixar, discreto (rodapé: Estudos/Contatos/Anotações/Agenda/Listas) ---------- */
 .btn-baixar-dados {
-    margin-bottom: 10px;
+    background: transparent;
+    color: var(--tinta-suave);
+    border: 1px solid rgba(107, 100, 85, 0.35);
+    font-size: 0.82em;
+    padding: 6px 12px;
+}
+
+.btn-baixar-dados:hover {
+    background: rgba(107, 100, 85, 0.12);
+    color: var(--tinta);
 }
