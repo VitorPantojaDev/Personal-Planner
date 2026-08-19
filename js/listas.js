@@ -159,19 +159,19 @@ async function carregarItens() {
 
 function renderizarColuna(coluna) {
     const ul = document.getElementById(`itens-${coluna}`);
-    const itensDaColuna = itensCache.filter((i) => i.coluna === coluna);
+    const itensDaColuna = itensCache
+        .filter((i) => i.coluna === coluna)
+        .sort((a, b) => a.texto.localeCompare(b.texto, "pt-BR", { sensitivity: "base" }));
 
     if (itensDaColuna.length === 0) {
         ul.innerHTML = '<li class="item-vazio">Nenhum item.</li>';
         return;
     }
 
-    ul.innerHTML = itensDaColuna.map((item, index) => `
+    ul.innerHTML = itensDaColuna.map((item) => `
         <li data-id="${item.id}">
             <span class="item-texto">${escapeHtml(item.texto)}</span>
             <span class="item-acoes">
-                <button type="button" class="btn-mover-cima" ${index === 0 ? "disabled" : ""} title="Mover para cima">▲</button>
-                <button type="button" class="btn-mover-baixo" ${index === itensDaColuna.length - 1 ? "disabled" : ""} title="Mover para baixo">▼</button>
                 <button type="button" class="btn-transferir" title="Mover para a outra coluna">${coluna === "esquerda" ? "→" : "←"}</button>
                 <button type="button" class="btn-excluir-item" title="Excluir">×</button>
             </span>
@@ -222,34 +222,12 @@ quadroAtualEl.addEventListener("click", async (evento) => {
     const item = itensCache.find((i) => i.id === itemId);
     if (!item) return;
 
-    if (evento.target.closest(".btn-mover-cima")) {
-        await moverItem(item, -1);
-    } else if (evento.target.closest(".btn-mover-baixo")) {
-        await moverItem(item, 1);
-    } else if (evento.target.closest(".btn-transferir")) {
+    if (evento.target.closest(".btn-transferir")) {
         await transferirItem(item);
     } else if (evento.target.closest(".btn-excluir-item")) {
         await excluirItem(item);
     }
 });
-
-async function moverItem(item, direcao) {
-    const itensDaColuna = itensCache
-        .filter((i) => i.coluna === item.coluna)
-        .sort((a, b) => a.ordem - b.ordem);
-
-    const indexAtual = itensDaColuna.findIndex((i) => i.id === item.id);
-    const indexVizinho = indexAtual + direcao;
-    if (indexVizinho < 0 || indexVizinho >= itensDaColuna.length) return;
-
-    const vizinho = itensDaColuna[indexVizinho];
-
-    // Troca as ordens dos dois itens.
-    await supabaseClient.from("lista_itens").update({ ordem: vizinho.ordem }).eq("id", item.id);
-    await supabaseClient.from("lista_itens").update({ ordem: item.ordem }).eq("id", vizinho.id);
-
-    await carregarItens();
-}
 
 async function transferirItem(item) {
     const colunaDestino = item.coluna === "esquerda" ? "direita" : "esquerda";
@@ -279,25 +257,6 @@ async function excluirItem(item) {
     }
     await carregarItens();
 }
-
-// ---------------------------------------------------------------
-// Ordenar A-Z (persiste a nova ordem no banco)
-// ---------------------------------------------------------------
-async function ordenarColunaAZ(coluna) {
-    const itensDaColuna = itensCache
-        .filter((i) => i.coluna === coluna)
-        .sort((a, b) => a.texto.localeCompare(b.texto, "pt-BR", { sensitivity: "base" }));
-
-    for (let i = 0; i < itensDaColuna.length; i++) {
-        await supabaseClient.from("lista_itens").update({ ordem: i }).eq("id", itensDaColuna[i].id);
-    }
-
-    await carregarItens();
-}
-
-document.querySelectorAll(".btn-ordenar-az").forEach((botao) => {
-    botao.addEventListener("click", () => ordenarColunaAZ(botao.dataset.coluna));
-});
 
 // ---------------------------------------------------------------
 // Baixar (uma coluna ou o quadro completo) em texto
