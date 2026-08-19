@@ -56,6 +56,7 @@ async function carregarQuadros() {
     if (!quadroSelecionadoId || !data.find((q) => q.id === quadroSelecionadoId)) {
         quadroSelecionadoId = null;
         quadroAtualEl.classList.add("oculto");
+        document.getElementById("quadro-acoes-download").classList.add("oculto");
         selectQuadroEl.value = "";
         return;
     }
@@ -69,6 +70,7 @@ selectQuadroEl.addEventListener("change", async () => {
 
     if (!quadroSelecionadoId) {
         quadroAtualEl.classList.add("oculto");
+        document.getElementById("quadro-acoes-download").classList.add("oculto");
         return;
     }
     
@@ -135,6 +137,7 @@ async function carregarItens() {
     if (!quadro) return;
 
     quadroAtualEl.classList.remove("oculto");
+    document.getElementById("quadro-acoes-download").classList.remove("oculto");
     document.getElementById("titulo-coluna-esquerda").textContent = quadro.coluna_esquerda_nome;
     document.getElementById("titulo-coluna-direita").textContent = quadro.coluna_direita_nome;
 
@@ -276,6 +279,76 @@ async function excluirItem(item) {
     }
     await carregarItens();
 }
+
+// ---------------------------------------------------------------
+// Ordenar A-Z (persiste a nova ordem no banco)
+// ---------------------------------------------------------------
+async function ordenarColunaAZ(coluna) {
+    const itensDaColuna = itensCache
+        .filter((i) => i.coluna === coluna)
+        .sort((a, b) => a.texto.localeCompare(b.texto, "pt-BR", { sensitivity: "base" }));
+
+    for (let i = 0; i < itensDaColuna.length; i++) {
+        await supabaseClient.from("lista_itens").update({ ordem: i }).eq("id", itensDaColuna[i].id);
+    }
+
+    await carregarItens();
+}
+
+document.querySelectorAll(".btn-ordenar-az").forEach((botao) => {
+    botao.addEventListener("click", () => ordenarColunaAZ(botao.dataset.coluna));
+});
+
+// ---------------------------------------------------------------
+// Baixar (uma coluna, ou o quadro completo em CSV/texto)
+// ---------------------------------------------------------------
+document.querySelectorAll(".btn-baixar-coluna").forEach((botao) => {
+    botao.addEventListener("click", () => baixarColuna(botao.dataset.coluna));
+});
+
+function baixarColuna(coluna) {
+    const quadro = quadrosCache.find((q) => q.id === quadroSelecionadoId);
+    if (!quadro) return;
+
+    const nomeColuna = coluna === "esquerda" ? quadro.coluna_esquerda_nome : quadro.coluna_direita_nome;
+    const itens = itensCache.filter((i) => i.coluna === coluna).sort((a, b) => a.ordem - b.ordem);
+
+    const texto = `${quadro.nome} — ${nomeColuna}\n\n` +
+        (itens.length > 0 ? itens.map((i) => "- " + i.texto).join("\n") : "(vazio)");
+
+    baixarArquivo(`${quadro.nome} - ${nomeColuna}.txt`, texto, "text/plain");
+}
+
+document.getElementById("btn-baixar-quadro-csv").addEventListener("click", () => {
+    const quadro = quadrosCache.find((q) => q.id === quadroSelecionadoId);
+    if (!quadro) return;
+
+    const esquerda = itensCache.filter((i) => i.coluna === "esquerda").sort((a, b) => a.ordem - b.ordem);
+    const direita = itensCache.filter((i) => i.coluna === "direita").sort((a, b) => a.ordem - b.ordem);
+    const maxLinhas = Math.max(esquerda.length, direita.length);
+
+    const linhas = [[quadro.coluna_esquerda_nome, quadro.coluna_direita_nome]];
+    for (let i = 0; i < maxLinhas; i++) {
+        linhas.push([esquerda[i]?.texto || "", direita[i]?.texto || ""]);
+    }
+
+    baixarArquivo(`${quadro.nome}.csv`, paraCSV(linhas), "text/csv");
+});
+
+document.getElementById("btn-baixar-quadro-txt").addEventListener("click", () => {
+    const quadro = quadrosCache.find((q) => q.id === quadroSelecionadoId);
+    if (!quadro) return;
+
+    const esquerda = itensCache.filter((i) => i.coluna === "esquerda").sort((a, b) => a.ordem - b.ordem);
+    const direita = itensCache.filter((i) => i.coluna === "direita").sort((a, b) => a.ordem - b.ordem);
+
+    let texto = `${quadro.nome}\n\n${quadro.coluna_esquerda_nome}:\n`;
+    texto += esquerda.length > 0 ? esquerda.map((i) => "- " + i.texto).join("\n") : "(vazio)";
+    texto += `\n\n${quadro.coluna_direita_nome}:\n`;
+    texto += direita.length > 0 ? direita.map((i) => "- " + i.texto).join("\n") : "(vazio)";
+
+    baixarArquivo(`${quadro.nome}.txt`, texto, "text/plain");
+});
 
 // ---------------------------------------------------------------
 document.getElementById("btn-sair").addEventListener("click", async () => {
