@@ -28,7 +28,7 @@ async function carregarAnotacoes() {
     const { data, error } = await supabaseClient
         .from("anotacoes")
         .select("*")
-        .order("atualizado_em", { ascending: false });
+        .order("titulo", { ascending: true });
 
     if (error) {
         console.log(error);
