@@ -82,16 +82,16 @@
         </div>
     </div>
 
-    <div id="quadro-acoes-download" class="oculto">
-        <button type="button" id="btn-baixar-quadro-csv">Baixar lista completa (CSV)</button>
-        <button type="button" id="btn-baixar-quadro-txt">Baixar lista completa (texto)</button>
-    </div>
-
     <p id="sem-listas" class="oculto agenda-vazio">Nenhuma lista criada ainda. Clique em "Nova lista" para começar.</p>
 
     <hr>
 
-    <button type="button" id="btn-sair">Sair</button>
+    <div class="rodape-acoes">
+        <button type="button" id="btn-sair">Sair</button>
+        <div id="quadro-acoes-download" class="oculto">
+            <button type="button" id="btn-baixar-quadro-txt" class="btn-baixar-dados">Baixar lista atual (texto)</button>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabaseClient.js"></script>
