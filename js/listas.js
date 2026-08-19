@@ -300,7 +300,7 @@ document.querySelectorAll(".btn-ordenar-az").forEach((botao) => {
 });
 
 // ---------------------------------------------------------------
-// Baixar (uma coluna, ou o quadro completo em CSV/texto)
+// Baixar (uma coluna ou o quadro completo) em texto
 // ---------------------------------------------------------------
 document.querySelectorAll(".btn-baixar-coluna").forEach((botao) => {
     botao.addEventListener("click", () => baixarColuna(botao.dataset.coluna));
@@ -318,22 +318,6 @@ function baixarColuna(coluna) {
 
     baixarArquivo(`${quadro.nome} - ${nomeColuna}.txt`, texto, "text/plain");
 }
-
-document.getElementById("btn-baixar-quadro-csv").addEventListener("click", () => {
-    const quadro = quadrosCache.find((q) => q.id === quadroSelecionadoId);
-    if (!quadro) return;
-
-    const esquerda = itensCache.filter((i) => i.coluna === "esquerda").sort((a, b) => a.ordem - b.ordem);
-    const direita = itensCache.filter((i) => i.coluna === "direita").sort((a, b) => a.ordem - b.ordem);
-    const maxLinhas = Math.max(esquerda.length, direita.length);
-
-    const linhas = [[quadro.coluna_esquerda_nome, quadro.coluna_direita_nome]];
-    for (let i = 0; i < maxLinhas; i++) {
-        linhas.push([esquerda[i]?.texto || "", direita[i]?.texto || ""]);
-    }
-
-    baixarArquivo(`${quadro.nome}.csv`, paraCSV(linhas), "text/csv");
-});
 
 document.getElementById("btn-baixar-quadro-txt").addEventListener("click", () => {
     const quadro = quadrosCache.find((q) => q.id === quadroSelecionadoId);
