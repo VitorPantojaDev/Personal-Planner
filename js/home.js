@@ -1106,3 +1106,29 @@ function gerarLinkGoogleAgenda(compromisso) {
 
     return `https://calendar.google.com/calendar/render?${params.toString()}`;
 }
+
+// ---------------------------------------------------------------
+// Exportar a visão atual (dia, semana ou mês) em CSV.
+// compromissosCache já vem filtrado pelo período em exibição,
+// preenchido pelas funções renderizarDia/renderizarSemana/renderizarMes.
+// ---------------------------------------------------------------
+document.getElementById("btn-baixar-agenda").addEventListener("click", () => {
+    const linhas = [["Data", "Hora início", "Hora fim", "Título", "Categoria", "Descrição"]];
+
+    compromissosCache
+        .slice()
+        .sort((a, b) => (a.data + (a.hora_inicio || "")).localeCompare(b.data + (b.hora_inicio || "")))
+        .forEach((c) => {
+            linhas.push([
+                c.data,
+                formatarHora(c.hora_inicio),
+                formatarHora(c.hora_fim),
+                c.titulo,
+                c.categoria || "",
+                c.descricao || "",
+            ]);
+        });
+
+    const rotulo = rotuloDataEl.textContent.replace(/[\/\\:]/g, "-");
+    baixarArquivo(`agenda - ${rotulo}.csv`, paraCSV(linhas), "text/csv");
+});
