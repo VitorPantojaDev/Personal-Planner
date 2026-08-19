@@ -317,6 +317,31 @@ async function excluirPet(id) {
 }
 
 // ---------------------------------------------------------------
+// Exportar contatos (+ pets) em CSV
+// ---------------------------------------------------------------
+document.getElementById("btn-baixar-contatos").addEventListener("click", () => {
+    const linhas = [["Nome", "Telefone", "Endereço", "Categoria", "Observações", "Pets"]];
+
+    contatosCache.forEach((contato) => {
+        const petsDoContato = petsCache
+            .filter((p) => p.contato_id === contato.id)
+            .map((p) => p.nome + (p.especie ? ` (${p.especie})` : ""))
+            .join("; ");
+
+        linhas.push([
+            contato.nome,
+            contato.telefone || "",
+            contato.endereco || "",
+            contato.categoria || "",
+            contato.observacoes || "",
+            petsDoContato,
+        ]);
+    });
+
+    baixarArquivo("contatos.csv", paraCSV(linhas), "text/csv");
+});
+
+// ---------------------------------------------------------------
 document.getElementById("btn-sair").addEventListener("click", async () => {
     await supabaseClient.auth.signOut();
     window.location.href = "index.html";
