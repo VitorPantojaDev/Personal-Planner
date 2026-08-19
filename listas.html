@@ -52,7 +52,13 @@
 
     <div id="quadro-atual" class="oculto">
         <div class="coluna-lista" data-coluna="esquerda">
-            <h3 id="titulo-coluna-esquerda"></h3>
+            <div class="coluna-cabecalho">
+                <h3 id="titulo-coluna-esquerda"></h3>
+                <span class="coluna-cabecalho-acoes">
+                    <button type="button" class="btn-ordenar-az" data-coluna="esquerda" title="Ordenar de A a Z">A-Z</button>
+                    <button type="button" class="btn-baixar-coluna" data-coluna="esquerda" title="Baixar esta coluna">⬇</button>
+                </span>
+            </div>
             <ul id="itens-esquerda" class="lista-itens-ul"></ul>
             <form class="form-add-item" data-coluna="esquerda">
                 <input type="text" placeholder="Adicionar item..." required>
@@ -61,13 +67,24 @@
         </div>
 
         <div class="coluna-lista" data-coluna="direita">
-            <h3 id="titulo-coluna-direita"></h3>
+            <div class="coluna-cabecalho">
+                <h3 id="titulo-coluna-direita"></h3>
+                <span class="coluna-cabecalho-acoes">
+                    <button type="button" class="btn-ordenar-az" data-coluna="direita" title="Ordenar de A a Z">A-Z</button>
+                    <button type="button" class="btn-baixar-coluna" data-coluna="direita" title="Baixar esta coluna">⬇</button>
+                </span>
+            </div>
             <ul id="itens-direita" class="lista-itens-ul"></ul>
             <form class="form-add-item" data-coluna="direita">
                 <input type="text" placeholder="Adicionar item..." required>
                 <button type="submit">+</button>
             </form>
         </div>
+    </div>
+
+    <div id="quadro-acoes-download" class="oculto">
+        <button type="button" id="btn-baixar-quadro-csv">Baixar lista completa (CSV)</button>
+        <button type="button" id="btn-baixar-quadro-txt">Baixar lista completa (texto)</button>
     </div>
 
     <p id="sem-listas" class="oculto agenda-vazio">Nenhuma lista criada ainda. Clique em "Nova lista" para começar.</p>
