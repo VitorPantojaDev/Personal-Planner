@@ -465,3 +465,27 @@ cronometroMinutosEl.addEventListener("input", () => {
         cronometroDisplayEl.textContent = formatarTempoCronometro(minutos * 60);
     }
 });
+
+// ---------------------------------------------------------------
+// Exportar cursos em CSV
+// ---------------------------------------------------------------
+document.getElementById("btn-baixar-cursos").addEventListener("click", () => {
+    const linhas = [["Nome", "Carga horária (h)", "Horas estudadas", "Data limite", "Horas/dia necessárias"]];
+
+    cursosCache.forEach((curso) => {
+        const progresso = calcularProgresso(curso);
+        const horasDia = (progresso.horasPorDia ?? null) !== null
+            ? progresso.horasPorDia.toFixed(1)
+            : "-";
+
+        linhas.push([
+            curso.nome,
+            curso.carga_horaria_total,
+            curso.horas_estudadas,
+            curso.data_limite || "-",
+            horasDia,
+        ]);
+    });
+
+    baixarArquivo("cursos.csv", paraCSV(linhas), "text/csv");
+});
