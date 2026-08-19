@@ -1108,27 +1108,35 @@ function gerarLinkGoogleAgenda(compromisso) {
 }
 
 // ---------------------------------------------------------------
-// Exportar a visão atual (dia, semana ou mês) em CSV.
+// Exportar a visão atual (dia, semana ou mês) em texto.
 // compromissosCache já vem filtrado pelo período em exibição,
 // preenchido pelas funções renderizarDia/renderizarSemana/renderizarMes.
 // ---------------------------------------------------------------
 document.getElementById("btn-baixar-agenda").addEventListener("click", () => {
-    const linhas = [["Data", "Hora início", "Hora fim", "Título", "Categoria", "Descrição"]];
-
-    compromissosCache
+    const rotulo = rotuloDataEl.textContent;
+    const ordenados = compromissosCache
         .slice()
-        .sort((a, b) => (a.data + (a.hora_inicio || "")).localeCompare(b.data + (b.hora_inicio || "")))
-        .forEach((c) => {
-            linhas.push([
-                c.data,
-                formatarHora(c.hora_inicio),
-                formatarHora(c.hora_fim),
-                c.titulo,
-                c.categoria || "",
-                c.descricao || "",
-            ]);
-        });
+        .sort((a, b) => (a.data + (a.hora_inicio || "")).localeCompare(b.data + (b.hora_inicio || "")));
 
-    const rotulo = rotuloDataEl.textContent.replace(/[\/\\:]/g, "-");
-    baixarArquivo(`agenda - ${rotulo}.csv`, paraCSV(linhas), "text/csv");
+    let texto = `Agenda — ${rotulo}\n\n`;
+
+    if (ordenados.length === 0) {
+        texto += "Nenhum compromisso neste período.";
+    } else {
+        ordenados.forEach((c) => {
+            const dataFormatada = new Date(c.data + "T00:00:00").toLocaleDateString("pt-BR");
+            const horario = c.hora_inicio
+                ? `${formatarHora(c.hora_inicio)}${c.hora_fim ? " às " + formatarHora(c.hora_fim) : ""}`
+                : "sem horário";
+
+            texto += `${dataFormatada} — ${horario}\n`;
+            texto += `${c.titulo}\n`;
+            if (c.categoria) texto += `Categoria: ${c.categoria}\n`;
+            if (c.descricao) texto += `${c.descricao}\n`;
+            texto += "\n";
+        });
+    }
+
+    const nomeArquivo = rotulo.replace(/[\/\\:]/g, "-");
+    baixarArquivo(`agenda - ${nomeArquivo}.txt`, texto.trim(), "text/plain");
 });
