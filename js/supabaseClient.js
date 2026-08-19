@@ -31,15 +31,3 @@ function baixarArquivo(nomeArquivo, conteudo, tipoMime) {
     link.remove();
     URL.revokeObjectURL(url);
 }
-
-function paraCampoCSV(valor) {
-    const texto = String(valor ?? "");
-    if (/[",\n]/.test(texto)) {
-        return '"' + texto.replaceAll('"', '""') + '"';
-    }
-    return texto;
-}
-
-function paraCSV(linhas) {
-    return linhas.map((linha) => linha.map(paraCampoCSV).join(",")).join("\n");
-}
