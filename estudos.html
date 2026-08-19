@@ -61,7 +61,6 @@
     <hr>
 
     <input type="text" id="pesquisa-cursos" placeholder="Pesquisar curso...">
-    <button type="button" id="btn-baixar-cursos" class="btn-baixar-dados">Baixar cursos (CSV)</button>
     
     <div id="lista-cursos">Carregando cursos...</div>
 
@@ -137,7 +136,10 @@
 
     <hr>
 
-    <button id="btn-sair">Sair</button>
+    <div class="rodape-acoes">
+        <button id="btn-sair">Sair</button>
+        <button type="button" id="btn-baixar-cursos" class="btn-baixar-dados">Baixar cursos (texto)</button>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabaseClient.js"></script>
