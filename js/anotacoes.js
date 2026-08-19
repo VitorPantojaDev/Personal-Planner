@@ -158,6 +158,18 @@ btnExcluirEl.addEventListener("click", async () => {
 });
 
 // ---------------------------------------------------------------
+// Exportar todas as anotações em um único arquivo de texto
+// ---------------------------------------------------------------
+document.getElementById("btn-baixar-anotacoes").addEventListener("click", () => {
+    let texto = "";
+    anotacoesCache.forEach((a) => {
+        texto += `# ${a.titulo}\n${a.conteudo || ""}\n\n---\n\n`;
+    });
+
+    baixarArquivo("anotacoes.txt", texto || "Nenhuma anotação.", "text/plain");
+});
+
+// ---------------------------------------------------------------
 document.getElementById("btn-sair").addEventListener("click", async () => {
     await supabaseClient.auth.signOut();
     window.location.href = "index.html";
