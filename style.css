@@ -1234,3 +1234,37 @@ button:active {
     border-top: 1px dashed rgba(160, 58, 44, 0.4);
     padding-top: 10px;
 }
+
+/* ---------- Listas: cabeçalho de coluna com ações ---------- */
+.coluna-cabecalho {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px dashed #ccc;
+    padding-bottom: 6px;
+    margin-bottom: 6px;
+}
+
+.coluna-cabecalho h3 {
+    margin: 0;
+    border: none;
+    padding: 0;
+}
+
+.coluna-cabecalho-acoes button {
+    font-size: 0.75em;
+    padding: 3px 6px;
+    margin-left: 4px;
+}
+
+#quadro-acoes-download {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* ---------- Botões de baixar, genérico (Estudos/Contatos/Anotações/Agenda) ---------- */
+.btn-baixar-dados {
+    margin-bottom: 10px;
+}
