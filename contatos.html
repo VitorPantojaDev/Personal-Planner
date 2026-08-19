@@ -28,7 +28,6 @@
     <hr>
 
     <input type="text" id="pesquisa-contatos" placeholder="Pesquisar contato ou pet...">
-    <button type="button" id="btn-baixar-contatos" class="btn-baixar-dados">Baixar contatos (CSV)</button>
 
     <div id="lista-contatos">Carregando contatos...</div>
 
@@ -104,7 +103,10 @@
 
     <hr>
 
-    <button id="btn-sair">Sair</button>
+    <div class="rodape-acoes">
+        <button id="btn-sair">Sair</button>
+        <button type="button" id="btn-baixar-contatos" class="btn-baixar-dados">Baixar contatos (texto)</button>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabaseClient.js"></script>
