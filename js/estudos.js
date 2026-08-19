@@ -467,25 +467,29 @@ cronometroMinutosEl.addEventListener("input", () => {
 });
 
 // ---------------------------------------------------------------
-// Exportar cursos em CSV
+// Exportar cursos em texto
 // ---------------------------------------------------------------
 document.getElementById("btn-baixar-cursos").addEventListener("click", () => {
-    const linhas = [["Nome", "Carga horária (h)", "Horas estudadas", "Data limite", "Horas/dia necessárias"]];
+    let texto = "Cursos\n\n";
 
-    cursosCache.forEach((curso) => {
-        const progresso = calcularProgresso(curso);
-        const horasDia = (progresso.horasPorDia ?? null) !== null
-            ? progresso.horasPorDia.toFixed(1)
-            : "-";
+    if (cursosCache.length === 0) {
+        texto += "Nenhum curso cadastrado.";
+    } else {
+        cursosCache.forEach((curso) => {
+            const progresso = calcularProgresso(curso);
+            const horasDia = (progresso.horasPorDia ?? null) !== null
+                ? progresso.horasPorDia.toFixed(1) + " h/dia"
+                : "-";
 
-        linhas.push([
-            curso.nome,
-            curso.carga_horaria_total,
-            curso.horas_estudadas,
-            curso.data_limite || "-",
-            horasDia,
-        ]);
-    });
+            texto += `${curso.nome}\n`;
+            texto += `Carga horária: ${curso.carga_horaria_total} h (estudadas: ${curso.horas_estudadas} h)\n`;
+            texto += `Data limite: ${curso.data_limite || "-"}\n`;
+            texto += `Necessário para cumprir o prazo: ${horasDia}\n`;
+            if (curso.link) texto += `Link: ${curso.link}\n`;
+            if (curso.observacoes) texto += `Observações: ${curso.observacoes}\n`;
+            texto += "\n";
+        });
+    }
 
-    baixarArquivo("cursos.csv", paraCSV(linhas), "text/csv");
+    baixarArquivo("cursos.txt", texto.trim(), "text/plain");
 });
