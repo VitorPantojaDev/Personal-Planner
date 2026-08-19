@@ -26,7 +26,6 @@
     <hr>
 
     <input type="text" id="pesquisa-anotacoes" placeholder="Pesquisar anotação...">
-    <button type="button" id="btn-baixar-anotacoes" class="btn-baixar-dados">Baixar anotações (texto)</button>
 
     <div id="lista-anotacoes">Carregando anotações...</div>
 
@@ -51,7 +50,10 @@
 
     <hr>
 
-    <button type="button" id="btn-sair">Sair</button>
+    <div class="rodape-acoes">
+        <button type="button" id="btn-sair">Sair</button>
+        <button type="button" id="btn-baixar-anotacoes" class="btn-baixar-dados">Baixar anotações (texto)</button>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabaseClient.js"></script>
