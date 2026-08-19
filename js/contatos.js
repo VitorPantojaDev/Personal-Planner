@@ -317,28 +317,31 @@ async function excluirPet(id) {
 }
 
 // ---------------------------------------------------------------
-// Exportar contatos (+ pets) em CSV
+// Exportar contatos (+ pets) em texto
 // ---------------------------------------------------------------
 document.getElementById("btn-baixar-contatos").addEventListener("click", () => {
-    const linhas = [["Nome", "Telefone", "Endereço", "Categoria", "Observações", "Pets"]];
+    let texto = "Contatos\n\n";
 
-    contatosCache.forEach((contato) => {
-        const petsDoContato = petsCache
-            .filter((p) => p.contato_id === contato.id)
-            .map((p) => p.nome + (p.especie ? ` (${p.especie})` : ""))
-            .join("; ");
+    if (contatosCache.length === 0) {
+        texto += "Nenhum contato cadastrado.";
+    } else {
+        contatosCache.forEach((contato) => {
+            const petsDoContato = petsCache
+                .filter((p) => p.contato_id === contato.id)
+                .map((p) => p.nome + (p.especie ? ` (${p.especie})` : ""))
+                .join(", ");
 
-        linhas.push([
-            contato.nome,
-            contato.telefone || "",
-            contato.endereco || "",
-            contato.categoria || "",
-            contato.observacoes || "",
-            petsDoContato,
-        ]);
-    });
+            texto += `${contato.nome}\n`;
+            if (contato.telefone) texto += `Telefone: ${contato.telefone}\n`;
+            if (contato.endereco) texto += `Endereço: ${contato.endereco}\n`;
+            if (contato.categoria) texto += `Categoria: ${contato.categoria}\n`;
+            if (contato.observacoes) texto += `Observações: ${contato.observacoes}\n`;
+            if (petsDoContato) texto += `Pets: ${petsDoContato}\n`;
+            texto += "\n";
+        });
+    }
 
-    baixarArquivo("contatos.csv", paraCSV(linhas), "text/csv");
+    baixarArquivo("contatos.txt", texto.trim(), "text/plain");
 });
 
 // ---------------------------------------------------------------
