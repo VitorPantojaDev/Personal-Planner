@@ -460,6 +460,24 @@ button:active {
     margin-bottom: 8px;
 }
 
+.meta-hoje {
+    font-size: 0.8em;
+    color: var(--tinta-suave);
+    margin-bottom: 8px;
+    padding-top: 6px;
+    border-top: 1px dashed rgba(43, 40, 32, 0.12);
+}
+
+.meta-hoje strong {
+    color: var(--jade);
+}
+
+.meta-hoje-cumprida {
+    color: var(--jade-claro);
+    font-weight: 600;
+    border-top-color: rgba(47, 107, 86, 0.25);
+}
+
 .curso-link {
     font-size: 0.85em;
     margin-bottom: 6px;

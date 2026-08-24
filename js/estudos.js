@@ -33,6 +33,27 @@ pesquisaCursosEl.addEventListener("input", () => {
 
 let cursosCache = [];
 
+let sessoesHojeCache = {}; // { curso_id: horas somadas hoje }
+
+async function carregarSessoesHoje() {
+    const hojeISO = formatarDataISO(new Date());
+    const { data, error } = await supabaseClient
+        .from("sessoes_estudo")
+        .select("curso_id, horas")
+        .eq("data", hojeISO);
+
+    if (error) {
+        console.log(error);
+        sessoesHojeCache = {};
+        return;
+    }
+
+    sessoesHojeCache = {};
+    data.forEach((sessao) => {
+        sessoesHojeCache[sessao.curso_id] = (sessoesHojeCache[sessao.curso_id] || 0) + sessao.horas;
+    });
+}
+
 // ---------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------
@@ -43,17 +64,45 @@ function formatarDataISO(date) {
     return `${ano}-${mes}-${dia}`;
 }
 
-// Calcula horas restantes, dias restantes e horas/dia necessárias
-// a partir dos dados brutos do curso — nunca armazenado no banco,
-// sempre recalculado na hora de exibir.
-function calcularProgresso(curso) {
+function horasParaHHMM(horasDecimais) {
+    const totalMinutos = Math.round(horasDecimais * 60);
+    const sinal = totalMinutos < 0 ? "-" : "";
+    const abs = Math.abs(totalMinutos);
+    const horas = Math.floor(abs / 60);
+    const minutos = abs % 60;
+    return `${sinal}${horas}:${String(minutos).padStart(2, "0")}`;
+}
+
+function hhmmParaHoras(texto) {
+    const partes = String(texto).trim().split(":");
+    const horas = parseInt(partes[0], 10) || 0;
+    const minutos = partes[1] ? parseInt(partes[1], 10) || 0 : 0;
+    return horas + minutos / 60;
+}
+
+function calcularProgresso(curso, horasHoje = 0) {
     const horasRestantes = Math.max(0, curso.carga_horaria_total - curso.horas_estudadas);
     const percentual = curso.carga_horaria_total > 0
         ? Math.min(100, (curso.horas_estudadas / curso.carga_horaria_total) * 100)
         : 0;
 
+    // Desconta o que já foi estudado hoje, para pegar a meta que existia
+    // no início do dia — sem ela se recalcular sozinha durante o dia.
+    const horasEstudadasAntesHoje = Math.max(0, curso.horas_estudadas - horasHoje);
+    const horasRestantesAntesHoje = Math.max(0, curso.carga_horaria_total - horasEstudadasAntesHoje);
+
+    function montarMetaHoje(diasParaMeta) {
+        if (horasRestantesAntesHoje <= 0) {
+            return { horasHoje, metaHojeHoras: 0, percentualHoje: 100 };
+        }
+        const metaHojeHoras = horasRestantesAntesHoje / diasParaMeta;
+        const percentualHoje = Math.min(100, (horasHoje / metaHojeHoras) * 100);
+        return { horasHoje, metaHojeHoras, percentualHoje };
+    }
+
     if (!curso.data_limite) {
-        return { horasRestantes, percentual, horasPorDia: null, status: "sem-prazo" };
+        // Sem data limite não dá para calcular uma meta diária com sentido.
+        return { horasRestantes, percentual, horasPorDia: null, status: "sem-prazo", metaHoje: null };
     }
 
     const hoje = new Date();
@@ -61,13 +110,15 @@ function calcularProgresso(curso) {
     const limite = new Date(curso.data_limite + "T00:00:00");
     const diffMs = limite - hoje;
     const diasRestantes = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+    const diasParaMeta = diasRestantes > 0 ? diasRestantes : 1;
+    const metaHoje = montarMetaHoje(diasParaMeta);
 
     if (horasRestantes <= 0) {
-        return { horasRestantes: 0, percentual: 100, horasPorDia: 0, status: "concluido" };
+        return { horasRestantes: 0, percentual: 100, horasPorDia: 0, status: "concluido", metaHoje };
     }
 
     if (diasRestantes <= 0) {
-        return { horasRestantes, percentual, horasPorDia: null, status: "vencido" };
+        return { horasRestantes, percentual, horasPorDia: null, status: "vencido", metaHoje };
     }
 
     const horasPorDia = horasRestantes / diasRestantes;
@@ -75,7 +126,7 @@ function calcularProgresso(curso) {
     if (horasPorDia > 4) status = "urgente";
     else if (horasPorDia > 2) status = "atencao";
 
-    return { horasRestantes, percentual, horasPorDia, diasRestantes, status };
+    return { horasRestantes, percentual, horasPorDia, diasRestantes, status, metaHoje };
 }
 
 // ---------------------------------------------------------------
@@ -84,20 +135,22 @@ function calcularProgresso(curso) {
 async function carregarCursos() {
     listaCursosEl.innerHTML = "Carregando...";
 
-    const { data, error } = await supabaseClient
+    const resultadoCursos = await supabaseClient
         .from("cursos")
         .select("*")
         .eq("ativo", true)
         .order("data_limite", { ascending: true, nullsFirst: false });
 
-    if (error) {
-        console.log(error);
+    await carregarSessoesHoje();
+
+    if (resultadoCursos.error) {
+        console.log(resultadoCursos.error);
         listaCursosEl.innerHTML = "Erro ao carregar cursos.";
         return;
     }
 
-    cursosCache = data;
-    renderizarCursos(data);
+    cursosCache = resultadoCursos.data;
+    renderizarCursos(cursosCache);
 }
 
 function renderizarCursos(cursos) {
@@ -109,21 +162,19 @@ function renderizarCursos(cursos) {
     listaCursosEl.innerHTML = "";
 
     cursos.forEach((curso) => {
-        const progresso = calcularProgresso(curso);
+        const progresso = calcularProgresso(curso, sessoesHojeCache[curso.id] || 0);
 
         const card = document.createElement("div");
         card.className = "card-curso status-" + progresso.status;
 
         let linhaMeta;
-        if (progresso.status === "concluido") {
-            linhaMeta = "Meta concluída.";
-        } else if (progresso.status === "vencido") {
-            linhaMeta = "Prazo vencido, ainda faltam " + progresso.horasRestantes.toFixed(1) + "h.";
+        if (progresso.status === "vencido") {
+            linhaMeta = "Prazo vencido, ainda faltam " + horasParaHHMM(progresso.horasRestantes) + ".";
         } else if (progresso.status === "sem-prazo") {
             linhaMeta = "Sem data limite definida.";
         } else {
-            linhaMeta = `Faltam ${progresso.horasRestantes.toFixed(1)}h em ${progresso.diasRestantes} dia(s) — `
-                + `<strong>${progresso.horasPorDia.toFixed(1)}h/dia</strong>`;
+            linhaMeta = `Faltam ${horasParaHHMM(progresso.horasRestantes)} em ${progresso.diasRestantes} dia(s) — `
+                + `<strong>${horasParaHHMM(progresso.horasPorDia)}/dia</strong>`;
         }
 
         const linkSeguro = curso.link && /^https?:\/\//i.test(curso.link) ? curso.link : null;
@@ -135,10 +186,16 @@ function renderizarCursos(cursos) {
             ? `<div class="curso-observacoes">${escapeHtml(curso.observacoes)}</div>`
             : "";
 
+        const metaHojeHtml = !progresso.metaHoje
+            ? ""
+            : progresso.metaHoje.metaHojeHoras > 0
+                ? `<div class="meta-hoje">Hoje: ${horasParaHHMM(progresso.metaHoje.horasHoje)} / ${horasParaHHMM(progresso.metaHoje.metaHojeHoras)} — <strong>${progresso.metaHoje.percentualHoje.toFixed(0)}%</strong> da meta do dia</div>`
+                : `<div class="meta-hoje meta-hoje-cumprida">Meta do dia já cumprida.</div>`;
+            
         card.innerHTML = `
             <div class="card-curso-cabecalho">
                 <strong>${escapeHtml(curso.nome)}</strong>
-                <span class="curso-horas">${curso.horas_estudadas.toFixed(1)} / ${curso.carga_horaria_total}h</span>
+                <span class="curso-horas">${horasParaHHMM(curso.horas_estudadas)} / ${horasParaHHMM(curso.carga_horaria_total)}</span>
             </div>
             <div class="barra-progresso">
                 <div class="barra-progresso-preenchida" style="width: ${progresso.percentual}%;"></div>
@@ -282,7 +339,12 @@ formSessaoEl.addEventListener("submit", async (evento) => {
     mensagemErroSessaoEl.textContent = "";
 
     const cursoId = document.getElementById("sessao-curso-id").value;
-    const horas = parseFloat(document.getElementById("sessao-horas").value);
+    const valorHoras = document.getElementById("sessao-horas").value.trim();
+        if (!/^\d+:[0-5]\d$/.test(valorHoras)) {
+            mensagemErroSessaoEl.textContent = "Informe as horas no formato hh:mm.";
+            return;
+    }
+    const horas = hhmmParaHoras(valorHoras);
 
     const dadosSessao = {
         curso_id: cursoId,
@@ -297,6 +359,8 @@ formSessaoEl.addEventListener("submit", async (evento) => {
         mensagemErroSessaoEl.textContent = "Erro ao registrar: " + erroSessao.message;
         return;
     }
+
+
 
     // Atualiza o acumulado de horas estudadas do curso.
     const curso = cursosCache.find((c) => c.id === cursoId);
@@ -348,14 +412,16 @@ function formatarTempoCronometro(segundos) {
 
 function atualizarPonteirosCronometro() {
     const decorrido = cronometroSegundosTotais - cronometroSegundosRestantes;
-    const segundos = decorrido % 60;
-    const minutos = Math.floor(decorrido / 60) % 60;
+    const progresso = cronometroSegundosTotais > 0 ? decorrido / cronometroSegundosTotais : 0;
 
-    const anguloSegundos = segundos * 6;
-    const anguloMinutos = minutos * 6 + segundos * 0.1; // avanço suave entre minutos
+    // Ponteiro principal: uma volta completa (360°) ao longo de todo o tempo definido pelo usuário.
+    const anguloProgresso = progresso * 360;
+
+    // Ponteiro fino: continua marcando os segundos reais, só para dar sensação de movimento contínuo.
+    const anguloSegundos = (decorrido % 60) * 6;
 
     document.getElementById("ponteiro-segundos").setAttribute("transform", `rotate(${anguloSegundos} 100 100)`);
-    document.getElementById("ponteiro-minutos").setAttribute("transform", `rotate(${anguloMinutos} 100 100)`);
+    document.getElementById("ponteiro-minutos").setAttribute("transform", `rotate(${anguloProgresso} 100 100)`);
 }
 
 function atualizarDisplayCronometro() {
@@ -478,11 +544,11 @@ document.getElementById("btn-baixar-cursos").addEventListener("click", () => {
         cursosCache.forEach((curso) => {
             const progresso = calcularProgresso(curso);
             const horasDia = (progresso.horasPorDia ?? null) !== null
-                ? progresso.horasPorDia.toFixed(1) + " h/dia"
+                ? horasParaHHMM(progresso.horasPorDia) + "/dia"
                 : "-";
 
             texto += `${curso.nome}\n`;
-            texto += `Carga horária: ${curso.carga_horaria_total} h (estudadas: ${curso.horas_estudadas} h)\n`;
+            texto += `Carga horária: ${horasParaHHMM(curso.carga_horaria_total)} (estudadas: ${horasParaHHMM(curso.horas_estudadas)})\n`;
             texto += `Data limite: ${curso.data_limite || "-"}\n`;
             texto += `Necessário para cumprir o prazo: ${horasDia}\n`;
             if (curso.link) texto += `Link: ${curso.link}\n`;
