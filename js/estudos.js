@@ -201,6 +201,7 @@ function renderizarCursos(cursos) {
                 <div class="barra-progresso-preenchida" style="width: ${progresso.percentual}%;"></div>
             </div>
             <div class="card-curso-meta">${linhaMeta}</div>
+            ${metaHojeHtml}
             ${linkHtml}
             ${observacoesHtml}
             <div class="card-curso-acoes">
