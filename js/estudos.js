@@ -361,6 +361,16 @@ formSessaoEl.addEventListener("submit", async (evento) => {
         return;
     }
 
+document.getElementById("sessao-horas").addEventListener("input", (evento) => {
+    let valor = evento.target.value.replace(/[^0-9:]/g, "");
+
+    const partes = valor.split(":");
+    if (partes.length > 2) {
+        valor = partes[0] + ":" + partes.slice(1).join("");
+    }
+
+    evento.target.value = valor;
+});
 
 
     // Atualiza o acumulado de horas estudadas do curso.
