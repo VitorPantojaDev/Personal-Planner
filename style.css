@@ -1280,3 +1280,15 @@ button:active {
     gap: 8px;
     flex-wrap: wrap;
 }
+
+#instalar-app-aviso {
+    text-align: center;
+    margin-top: 12px;
+}
+
+.instalar-dica {
+    text-align: center;
+    font-size: 0.85em;
+    color: #666;
+    margin-top: 12px;
+}
