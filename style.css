@@ -874,9 +874,6 @@ button:active {
 .btn-baixar-dados {
     display: inline-block;
     margin-bottom: 10px;
-    background: transparent;
-    color: var(--jade);
-    border-color: var(--jade);
 }
 
 .btn-baixar-dados:hover {
