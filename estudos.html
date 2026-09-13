@@ -68,10 +68,10 @@
 
     <button id="btn-novo-curso">Novo curso</button>
 
-    <div id="formulario-curso" style="display:none;">
+    <div id="formulario-curso" class="formulario-painel" style="display:none;">
         <h3 id="form-curso-titulo">Novo curso</h3>
 
-        <form id="form-curso">
+        <form id="form-curso" class="form-padrao">
             <input type="hidden" id="curso-id">
 
             <div>
@@ -106,10 +106,10 @@
         <p id="mensagem-erro-curso" style="color: red;"></p>
     </div>
 
-    <div id="formulario-sessao" style="display:none;">
+    <div id="formulario-sessao" class="formulario-painel" style="display:none;">
         <h3>Registrar sessão de estudo</h3>
 
-        <form id="form-sessao">
+        <form id="form-sessao" class="form-padrao">
             <input type="hidden" id="sessao-curso-id">
 
             <div>
@@ -138,7 +138,7 @@
 
     <div class="rodape-acoes">
         <button id="btn-sair">Sair</button>
-        <button type="button" id="btn-baixar-cursos">Baixar cursos</button>
+        <button type="button" id="btn-baixar-cursos" class="btn-baixar-dados">Baixar cursos</button>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

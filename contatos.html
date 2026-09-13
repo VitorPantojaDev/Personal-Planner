@@ -35,10 +35,10 @@
 
     <button id="btn-novo-contato">Novo contato</button>
 
-    <div id="formulario-contato" style="display:none;">
+    <div id="formulario-contato" class="formulario-painel" style="display:none;">
         <h3 id="form-contato-titulo">Novo contato</h3>
 
-        <form id="form-contato">
+        <form id="form-contato" class="form-padrao">
             <input type="hidden" id="contato-id">
 
             <div>
@@ -73,10 +73,10 @@
         <p id="mensagem-erro-contato" style="color: red;"></p>
     </div>
 
-    <div id="formulario-pet" style="display:none;">
+    <div id="formulario-pet" class="formulario-painel" style="display:none;">
         <h3>Novo pet</h3>
 
-        <form id="form-pet">
+        <form id="form-pet" class="form-padrao">
             <input type="hidden" id="pet-contato-id">
 
             <div>
@@ -105,7 +105,7 @@
 
     <div class="rodape-acoes">
         <button id="btn-sair">Sair</button>
-        <button type="button" id="btn-baixar-contatos">Baixar contatos</button>
+        <button type="button" id="btn-baixar-contatos" class="btn-baixar-dados">Baixar contatos</button>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

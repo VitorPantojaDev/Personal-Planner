@@ -57,10 +57,10 @@ function renderizarLista() {
         const preview = (a.conteudo || "").slice(0, 80).replace(/\n/g, " ");
         const dataFormatada = new Date(a.atualizado_em).toLocaleDateString("pt-BR");
         return `
-            <div class="card-anotacao" data-id="${a.id}">
+            <div class="cartao-lista" data-id="${a.id}">
                 <strong>${escapeHtml(a.titulo)}</strong>
-                <div class="anotacao-preview">${escapeHtml(preview)}${(a.conteudo || "").length > 80 ? "…" : ""}</div>
-                <div class="anotacao-data">Editado em ${dataFormatada}</div>
+                <div class="cartao-preview">${escapeHtml(preview)}${(a.conteudo || "").length > 80 ? "…" : ""}</div>
+                <div class="cartao-data">Editado em ${dataFormatada}</div>
             </div>
         `;
     }).join("");

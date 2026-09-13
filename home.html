@@ -65,10 +65,10 @@
         Novo compromisso
     </button>
 
-    <div id="formulario-compromisso" style="display:none;">
+    <div id="formulario-compromisso" class="formulario-painel" style="display:none;">
         <h3 id="form-titulo">Novo compromisso</h3>
 
-        <form id="form-compromisso">
+        <form id="form-compromisso" class="form-padrao">
             <input type="hidden" id="compromisso-id">
 
             <div>
@@ -160,7 +160,7 @@
 
         <div id="lista-tarefas">Carregando tarefas...</div>
 
-        <form id="form-nova-tarefa">
+        <form id="form-nova-tarefa" class="form-padrao">
             <input type="text" id="nova-tarefa-titulo" placeholder="Nova tarefa..." required>
             <button type="submit">Adicionar</button>
         </form>
@@ -172,14 +172,14 @@
         <button type="button" id="btn-sair">Sair</button>
         <button type="button" id="btn-trocar-senha">Trocar senha</button>
         <button type="button" id="btn-backup">Baixar backup</button>
-        <button type="button" id="btn-baixar-agenda">Baixar visão</button>
+        <button type="button" id="btn-baixar-agenda" class="btn-baixar-dados">Baixar visão</button>
         <a href="mural.html" class="botao-link">Mural</a>
     </div>
 
-    <div id="formulario-senha" style="display:none;">
+    <div id="formulario-senha" class="formulario-painel" style="display:none;">
         <h3>Trocar senha</h3>
 
-        <form id="form-trocar-senha">
+        <form id="form-trocar-senha" class="form-padrao">
             <div>
                 <label for="confirmar-senha">Confirmar nova senha:</label>
                 <input type="password" id="confirmar-senha" minlength="6" required>

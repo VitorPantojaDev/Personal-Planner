@@ -156,11 +156,10 @@ button:active {
 }
 
 /* ---------- Formulários ---------- */
-#formulario-compromisso,
-#formulario-curso,
-#formulario-sessao,
-#formulario-contato,
-#formulario-senha{
+/* [PASSO 2] Substitui #formulario-compromisso, #formulario-curso, #formulario-sessao,
+   #formulario-contato, #formulario-senha, #formulario-quadro.
+   Aplique class="formulario-painel" no HTML de cada um desses painéis (mantendo o id). */
+.formulario-painel {
     border: 1px solid rgba(201, 162, 77, 0.5);
     background: var(--pergaminho-escuro);
     border-radius: 10px;
@@ -168,17 +167,14 @@ button:active {
     margin-top: 14px;
 }
 
-#form-compromisso div,
-#form-curso div,
-#form-sessao div,
-#form-contato div {
+/* [PASSO 2] Substitui os seletores repetidos #form-compromisso div, #form-curso div,
+   #form-sessao div, #form-contato div (e o resto da família). Aplique
+   class="form-padrao" na tag <form> de cada formulário. */
+.form-padrao div {
     margin-bottom: 12px;
 }
 
-#form-compromisso label,
-#form-curso label,
-#form-sessao label,
-#form-contato label {
+.form-padrao label {
     display: block;
     margin-bottom: 4px;
     font-size: 0.85em;
@@ -186,14 +182,9 @@ button:active {
     font-weight: 600;
 }
 
-#form-compromisso input,
-#form-compromisso textarea,
-#form-compromisso select,
-#form-curso input,
-#form-curso textarea,
-#form-sessao input,
-#form-contato input,
-#form-nova-tarefa input {
+.form-padrao input,
+.form-padrao textarea,
+.form-padrao select {
     width: 100%;
     box-sizing: border-box;
     padding: 8px 10px;
@@ -204,12 +195,9 @@ button:active {
     color: var(--tinta);
 }
 
-#form-compromisso input:focus,
-#form-compromisso textarea:focus,
-#form-curso input:focus,
-#form-sessao input:focus,
-#form-contato input:focus,
-#form-nova-tarefa input:focus {
+.form-padrao input:focus,
+.form-padrao textarea:focus,
+.form-padrao select:focus {
     outline: none;
     border-color: var(--dourado);
     box-shadow: 0 0 0 2px rgba(201, 162, 77, 0.25);
@@ -776,27 +764,27 @@ button:active {
     font-weight: normal;
     margin-bottom: 8px;
 }
- 
+
 #repetir-opcoes {
-    border: 1px dashed #ccc;
+    border: 1px dashed rgba(201, 162, 77, 0.4);
     border-radius: 6px;
     padding: 10px;
     margin-bottom: 10px;
 }
- 
+
 .repetir-dica {
     font-size: 0.8em;
-    color: #777;
+    color: var(--tinta-suave);
     margin: 0 0 8px 0;
 }
- 
+
 #repetir-dias-semana {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
     margin-bottom: 10px;
 }
- 
+
 #repetir-dias-semana label {
     display: flex;
     align-items: center;
@@ -805,7 +793,7 @@ button:active {
     font-weight: normal;
     margin: 0;
 }
- 
+
 /* Versão reforçada: sobrepõe qualquer regra genérica de input do tema */
 #formulario-compromisso input[type="checkbox"] {
     width: 18px !important;
@@ -848,7 +836,7 @@ button:active {
 .card-contato-detalhes {
     margin-top: 8px;
     padding-top: 8px;
-    border-top: 1px dashed #ccc;
+    border-top: 1px dashed rgba(201, 162, 77, 0.4);
 }
 
 #pesquisa-geral {
@@ -857,9 +845,11 @@ button:active {
     margin-bottom: 10px;
 }
 
+/* [PASSO 4.2] #pesquisa-anotacoes adicionado — antes ficava sem estilo. */
 #pesquisa-geral input,
 #pesquisa-cursos,
-#pesquisa-contatos {
+#pesquisa-contatos,
+#pesquisa-anotacoes {
     flex: 1;
     width: 100%;
     padding: 6px;
@@ -869,21 +859,34 @@ button:active {
 
 .resultado-pesquisa-item {
     padding: 8px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid rgba(43, 40, 32, 0.12);
     cursor: pointer;
 }
 
-
 /* ---------- Botão de backup ---------- */
-
 #btn-backup:disabled {
     opacity: 0.6;
     cursor: wait;
 }
 
+/* [PASSO 4.1] Nova — .btn-baixar-dados era usado no HTML mas não tinha
+   nenhuma regra correspondente aqui. */
+.btn-baixar-dados {
+    display: inline-block;
+    margin-bottom: 10px;
+    background: transparent;
+    color: var(--jade);
+    border-color: var(--jade);
+}
+
+.btn-baixar-dados:hover {
+    background: var(--jade);
+    color: var(--pergaminho);
+}
+
 #cronometro-estudos {
     background: transparent;
-    border: 1px solid #ccc;
+    border: 1px solid rgba(201, 162, 77, 0.4);
     border-radius: 8px;
     padding: 12px 16px;
     margin-bottom: 12px;
@@ -910,7 +913,7 @@ button:active {
 
 #cronometro-status {
     font-size: 0.85em;
-    color: #666;
+    color: var(--tinta-suave);
     margin-bottom: 10px;
 }
 
@@ -924,7 +927,7 @@ button:active {
     display: inline-block;
     font-size: 0.8em;
     margin-right: 8px;
-    color: #2c5f8a;
+    color: var(--jade-claro);
     text-decoration: none;
 }
 
@@ -937,14 +940,14 @@ button:active {
     width: 100%;
     text-align: left;
     background: transparent;
-    border: 1px solid #ccc;
-    color: #1c4530;
+    border: 1px solid rgba(201, 162, 77, 0.4);
+    color: var(--jade);
     font-weight: bold;
 }
 
 #cronometro-mini {
     font-weight: normal;
-    color: #888;
+    color: var(--tinta-suave);
     font-size: 0.85em;
 }
 
@@ -986,7 +989,7 @@ button:active {
 .coluna-lista {
     flex: 1;
     min-width: 220px;
-    border: 1px solid #ccc;
+    border: 1px solid rgba(201, 162, 77, 0.4);
     border-radius: 8px;
     padding: 10px;
 }
@@ -994,7 +997,7 @@ button:active {
 .coluna-lista h3 {
     margin-top: 0;
     font-size: 1em;
-    border-bottom: 1px dashed #ccc;
+    border-bottom: 1px dashed rgba(201, 162, 77, 0.4);
     padding-bottom: 6px;
 }
 
@@ -1010,7 +1013,7 @@ button:active {
     align-items: center;
     gap: 6px;
     padding: 6px 0;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid rgba(43, 40, 32, 0.12);
     font-size: 0.9em;
 }
 
@@ -1037,7 +1040,7 @@ button:active {
 }
 
 .item-vazio {
-    color: #999;
+    color: var(--tinta-suave);
     font-style: italic;
     font-size: 0.85em;
 }
@@ -1053,13 +1056,8 @@ button:active {
 }
 
 /* ---------- Formulário de novo quadro ---------- */
-#formulario-quadro {
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 16px;
-    margin-bottom: 12px;
-}
-
+/* [PASSO 2] #formulario-quadro entra no padrão: aplique class="formulario-painel"
+   no HTML deste painel também. */
 #formulario-quadro div {
     margin-bottom: 10px;
 }
@@ -1076,72 +1074,97 @@ button:active {
     padding: 6px;
 }
 
-/* ---------- Lista de anotações ---------- */
-#lista-anotacoes {
+/* ---------- Listas (Anotações + Recados, unificado) ---------- */
+/* [PASSO 1] Substitui os seis pares idênticos de #lista-anotacoes/#anotacao-* e
+   #lista-recados/#recado-*. Troque as classes no js/anotacoes.js e no js/mural.js
+   (veja a lista de mudanças na mensagem de texto). */
+#lista-anotacoes,
+#lista-recados {
     display: flex;
     flex-direction: column;
     gap: 8px;
     margin-bottom: 12px;
 }
 
-.card-anotacao {
-    border: 1px solid #ccc;
+.cartao-lista {
+    border: 1px solid rgba(201, 162, 77, 0.4);
     border-radius: 8px;
     padding: 10px 12px;
     cursor: pointer;
+    background: rgba(255, 255, 255, 0.35);
 }
 
-.anotacao-preview {
+.cartao-preview {
     font-size: 0.85em;
-    color: #666;
+    color: var(--tinta-suave);
     margin-top: 4px;
 }
 
-.anotacao-data {
+.cartao-data {
     font-size: 0.75em;
-    color: #999;
+    color: var(--tinta-suave);
     margin-top: 4px;
 }
 
-/* ---------- Editor ---------- */
-#editor-anotacao {
-    border: 1px solid #ccc;
-    border-radius: 8px;
+.editor-painel {
+    border: 1px solid rgba(201, 162, 77, 0.5);
+    background: var(--pergaminho-escuro);
+    border-radius: 10px;
     padding: 12px;
     margin-top: 12px;
 }
 
-#anotacao-titulo {
+.editor-titulo {
     width: 100%;
     box-sizing: border-box;
     padding: 8px;
     font-size: 1.1em;
     font-weight: bold;
     margin-bottom: 8px;
+    border: 1px solid rgba(43, 40, 32, 0.2);
+    border-radius: 6px;
+    background: var(--pergaminho);
+    font-family: inherit;
+    color: var(--tinta);
 }
 
-#anotacao-conteudo {
+.editor-conteudo {
     width: 100%;
     box-sizing: border-box;
     padding: 8px;
     font-family: inherit;
     resize: vertical;
     margin-bottom: 6px;
+    border: 1px solid rgba(43, 40, 32, 0.2);
+    border-radius: 6px;
+    background: var(--pergaminho);
+    color: var(--tinta);
 }
 
-#anotacao-info {
+.editor-titulo:disabled,
+.editor-conteudo:disabled {
+    background: rgba(0, 0, 0, 0.04);
+    color: var(--tinta-suave);
+    cursor: not-allowed;
+}
+
+#anotacao-info,
+#recado-info {
     font-size: 0.8em;
-    color: #999;
+    color: var(--tinta-suave);
     margin-bottom: 8px;
 }
 
-#anotacao-botoes {
+#anotacao-botoes,
+#recado-botoes {
     display: flex;
     gap: 8px;
 }
 
-#btn-excluir-anotacao {
-    background: #c0392b;
+#btn-excluir-anotacao,
+#btn-excluir-recado {
+    background: var(--vermelhao);
+    border-color: var(--vermelhao);
     margin-left: auto;
 }
 
@@ -1157,64 +1180,6 @@ button:active {
     padding: 8px 14px;
     text-decoration: none;
     transition: background 0.15s ease, transform 0.1s ease;
-}
-
-/* ---------- Lista de recados ---------- */
-#lista-recados {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-bottom: 12px;
-}
-
-.card-recado {
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 10px 12px;
-    cursor: pointer;
-}
-
-.recado-preview {
-    font-size: 0.85em;
-    color: #666;
-    margin-top: 4px;
-}
-
-.recado-data {
-    font-size: 0.75em;
-    color: #999;
-    margin-top: 4px;
-}
-
-#editor-recado {
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 12px;
-    margin-top: 12px;
-}
-
-#recado-titulo {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 8px;
-    font-size: 1.1em;
-    font-weight: bold;
-    margin-bottom: 8px;
-}
-
-#recado-conteudo {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 8px;
-    font-family: inherit;
-    resize: vertical;
-}
-
-#recado-titulo:disabled,
-#recado-conteudo:disabled {
-    background: rgba(0, 0, 0, 0.04);
-    color: #666;
-    cursor: not-allowed;
 }
 
 .selo-moderador {
@@ -1247,9 +1212,9 @@ button:active {
 }
 
 .mural-aviso {
-    color: #a03a2c;
+    color: var(--vermelhao);
     font-weight: bold;
-    border-top: 1px dashed rgba(160, 58, 44, 0.4);
+    border-top: 1px dashed rgba(163, 64, 44, 0.4);
     padding-top: 10px;
 }
 
@@ -1258,7 +1223,7 @@ button:active {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px dashed #ccc;
+    border-bottom: 1px dashed rgba(201, 162, 77, 0.4);
     padding-bottom: 6px;
     margin-bottom: 6px;
 }
@@ -1289,6 +1254,6 @@ button:active {
 .instalar-dica {
     text-align: center;
     font-size: 0.85em;
-    color: #666;
+    color: var(--tinta-suave);
     margin-top: 12px;
 }
