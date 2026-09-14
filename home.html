@@ -169,17 +169,22 @@
     <hr>
 
     <div class="rodape-acoes">
-        <button type="button" id="btn-sair">Sair</button>
-        <button type="button" id="btn-trocar-senha">Trocar senha</button>
-        <button type="button" id="btn-backup">Baixar backup</button>
         <button type="button" id="btn-baixar-agenda" class="btn-baixar-dados">Baixar visão</button>
+        <button type="button" id="btn-backup">Baixar backup</button>
+        <button type="button" id="btn-trocar-senha">Trocar senha</button>
         <a href="mural.html" class="botao-link">Mural</a>
+        <button type="button" id="btn-sair">Sair</button>
     </div>
 
     <div id="formulario-senha" class="formulario-painel" style="display:none;">
         <h3>Trocar senha</h3>
 
         <form id="form-trocar-senha" class="form-padrao">
+            <div>
+                <label for="nova-senha">Nova senha:</label>
+                <input type="password" id="nova-senha" minlength="6" required>
+            </div>
+
             <div>
                 <label for="confirmar-senha">Confirmar nova senha:</label>
                 <input type="password" id="confirmar-senha" minlength="6" required>
@@ -206,6 +211,24 @@
             <div id="modal-revisao-acoes">
                 <button type="button" id="btn-renovar-todas">Renovar todas</button>
                 <button type="button" id="btn-fechar-revisao">Fechar por agora</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de exclusão de compromisso recorrente: pergunta se é pra
+         excluir a série inteira ou só a data clicada. Some por padrão,
+         home.js controla a exibição. -->
+    <div id="modal-excluir-serie" style="display:none;">
+        <div id="modal-excluir-serie-conteudo">
+            <h3>Excluir compromisso</h3>
+            <p class="modal-revisao-intro">
+                Este compromisso faz parte de uma repetição. O que você quer excluir?
+            </p>
+
+            <div id="modal-excluir-serie-acoes">
+                <button type="button" id="btn-excluir-serie-toda">Excluir a série inteira</button>
+                <button type="button" id="btn-excluir-serie-uma">Excluir só esta data</button>
+                <button type="button" id="btn-excluir-serie-cancelar">Cancelar</button>
             </div>
         </div>
     </div>

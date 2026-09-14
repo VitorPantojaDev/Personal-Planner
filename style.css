@@ -126,10 +126,22 @@ button:active {
 
 .rodape-acoes {
    display: flex;
+   flex-direction: column;
    justify-content: center;
-   align-items: center;
+   align-items: stretch;
    gap: 10px;
-   flex-wrap: wrap;
+}
+
+.rodape-acoes button,
+.rodape-acoes .botao-link,
+.rodape-acoes > div {
+    width: 100%;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.rodape-acoes #btn-sair {
+    margin-top: 4px;
 }
 
 #btn-cancelar-compromisso,
@@ -321,6 +333,53 @@ button:active {
 .semana-vazio {
     text-align: center;
     color: rgba(43, 40, 32, 0.25);
+}
+
+/* ---------- Tooltip de compromissos (visões semana/mês) ---------- */
+#tooltip-agenda {
+    position: fixed;
+    z-index: 1000;
+    min-width: 140px;
+    max-width: 240px;
+    max-height: 260px;
+    overflow-y: auto;
+    background: var(--pergaminho);
+    color: var(--tinta);
+    border: 1px solid var(--dourado);
+    border-radius: 8px;
+    padding: 8px 10px;
+    box-shadow: 0 10px 26px var(--sombra);
+    font-size: 0.78em;
+    line-height: 1.4;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.12s ease;
+}
+
+#tooltip-agenda.visivel {
+    opacity: 1;
+    visibility: visible;
+}
+
+.tooltip-agenda-cabecalho {
+    font-family: "Noto Serif", serif;
+    font-weight: 600;
+    color: var(--jade);
+    text-transform: capitalize;
+    margin-bottom: 5px;
+    padding-bottom: 4px;
+    border-bottom: 1px dashed rgba(201, 162, 77, 0.4);
+}
+
+.tooltip-agenda-item {
+    padding: 2px 0;
+}
+
+.tooltip-agenda-hora {
+    color: var(--jade);
+    font-weight: 600;
+    margin-right: 5px;
 }
 
 /* ---------- Visão MÊS ---------- */
@@ -651,7 +710,8 @@ button:active {
 }
 
 /* ---------- Modal de revisão semanal ---------- */
-#modal-revisao {
+#modal-revisao,
+#modal-excluir-serie {
     position: fixed;
     inset: 0;
     background: rgba(20, 38, 31, 0.55);
@@ -669,7 +729,8 @@ button:active {
     to { opacity: 1; }
 }
 
-#modal-revisao-conteudo {
+#modal-revisao-conteudo,
+#modal-excluir-serie-conteudo {
     background: var(--pergaminho);
     border: 1px solid var(--dourado);
     border-radius: 14px;
@@ -681,7 +742,8 @@ button:active {
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
 }
 
-#modal-revisao-conteudo h3 {
+#modal-revisao-conteudo h3,
+#modal-excluir-serie-conteudo h3 {
     color: var(--jade);
     margin-bottom: 8px;
 }
@@ -737,6 +799,30 @@ button:active {
 }
 
 #btn-fechar-revisao {
+    background: transparent;
+    color: var(--tinta-suave);
+    border-color: rgba(107, 100, 85, 0.35);
+}
+
+/* ---------- Modal: excluir compromisso recorrente ---------- */
+#modal-excluir-serie-acoes {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+#btn-excluir-serie-toda {
+    background: var(--vermelhao);
+    border-color: var(--vermelhao);
+}
+
+#btn-excluir-serie-uma {
+    background: transparent;
+    color: var(--jade);
+    border-color: var(--jade);
+}
+
+#btn-excluir-serie-cancelar {
     background: transparent;
     color: var(--tinta-suave);
     border-color: rgba(107, 100, 85, 0.35);

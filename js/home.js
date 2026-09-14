@@ -376,9 +376,13 @@ async function renderizarSemana() {
                     ? compromisso.titulo.slice(0, 9) + "…"
                     : compromisso.titulo;
                 item.innerHTML = escapeHtml(tituloCurto);
-                item.title = compromisso.titulo;
                 coluna.appendChild(item);
             });
+
+            coluna.addEventListener("mouseenter", () => {
+                mostrarTooltipAgenda(coluna, diaData, compromissosDoDia);
+            });
+            coluna.addEventListener("mouseleave", esconderTooltipAgenda);
         }
 
         grade.appendChild(coluna);
@@ -459,11 +463,78 @@ async function renderizarMes() {
             ${linhas}
             ${linhaExtra}
         `;
+
+        if (compromissosDoDia.length > 0) {
+            celula.addEventListener("mouseenter", () => {
+                mostrarTooltipAgenda(celula, diaData, compromissosDoDia);
+            });
+            celula.addEventListener("mouseleave", esconderTooltipAgenda);
+        }
+
         grade.appendChild(celula);
     }
 
     agendaContainerEl.innerHTML = "";
     agendaContainerEl.appendChild(grade);
+}
+
+// ---------------------------------------------------------------
+// Tooltip com todos os compromissos do dia, usado ao passar o mouse
+// sobre uma coluna (visão semana) ou uma célula (visão mês).
+// ---------------------------------------------------------------
+const tooltipAgendaEl = document.createElement("div");
+tooltipAgendaEl.id = "tooltip-agenda";
+document.body.appendChild(tooltipAgendaEl);
+
+function montarConteudoTooltipAgenda(diaData, compromissosDoDia) {
+    const rotuloDia = diaData.toLocaleDateString("pt-BR", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+    });
+
+    const itens = compromissosDoDia
+        .slice()
+        .sort((a, b) => (a.hora_inicio || "").localeCompare(b.hora_inicio || ""))
+        .map((compromisso) => `
+            <div class="tooltip-agenda-item">
+                <span class="tooltip-agenda-hora">${formatarHora(compromisso.hora_inicio) || "—"}</span>
+                <span class="tooltip-agenda-titulo-item">${escapeHtml(compromisso.titulo)}</span>
+            </div>
+        `)
+        .join("");
+
+    return `<div class="tooltip-agenda-cabecalho">${escapeHtml(rotuloDia)}</div>${itens}`;
+}
+
+function posicionarTooltipAgenda(elementoReferencia) {
+    const retanguloRef = elementoReferencia.getBoundingClientRect();
+    const retanguloTooltip = tooltipAgendaEl.getBoundingClientRect();
+
+    let esquerda = retanguloRef.left + retanguloRef.width / 2 - retanguloTooltip.width / 2;
+    let topo = retanguloRef.top - retanguloTooltip.height - 8;
+
+    // Mantém o tooltip dentro da largura visível da tela.
+    if (esquerda < 8) esquerda = 8;
+    if (esquerda + retanguloTooltip.width > window.innerWidth - 8) {
+        esquerda = window.innerWidth - retanguloTooltip.width - 8;
+    }
+    // Se não houver espaço acima do elemento, mostra abaixo dele.
+    if (topo < 8) topo = retanguloRef.bottom + 8;
+
+    tooltipAgendaEl.style.left = `${esquerda}px`;
+    tooltipAgendaEl.style.top = `${topo}px`;
+}
+
+function mostrarTooltipAgenda(elementoReferencia, diaData, compromissosDoDia) {
+    if (!compromissosDoDia || compromissosDoDia.length === 0) return;
+    tooltipAgendaEl.innerHTML = montarConteudoTooltipAgenda(diaData, compromissosDoDia);
+    tooltipAgendaEl.classList.add("visivel");
+    posicionarTooltipAgenda(elementoReferencia);
+}
+
+function esconderTooltipAgenda() {
+    tooltipAgendaEl.classList.remove("visivel");
 }
 
 // ---------------------------------------------------------------
@@ -672,17 +743,44 @@ formEl.addEventListener("submit", async (evento) => {
     renderizarAgenda();
 });
 
+// ---------------------------------------------------------------
+// Modal: pergunta se, ao excluir um compromisso que faz parte de uma
+// repetição, o usuário quer excluir a série inteira ou só esta data.
+// Substitui o antigo uso de confirm() (que reaproveitava OK/Cancelar
+// de um jeito pouco claro) por um modal com 3 opções explícitas.
+// ---------------------------------------------------------------
+const modalExcluirSerieEl = document.getElementById("modal-excluir-serie");
+
+function perguntarExclusaoSerie() {
+    return new Promise((resolve) => {
+        modalExcluirSerieEl.style.display = "flex";
+
+        function finalizar(escolha) {
+            modalExcluirSerieEl.style.display = "none";
+            document.getElementById("btn-excluir-serie-toda").removeEventListener("click", handlerToda);
+            document.getElementById("btn-excluir-serie-uma").removeEventListener("click", handlerUma);
+            document.getElementById("btn-excluir-serie-cancelar").removeEventListener("click", handlerCancelar);
+            resolve(escolha);
+        }
+
+        const handlerToda = () => finalizar("toda");
+        const handlerUma = () => finalizar("uma");
+        const handlerCancelar = () => finalizar("cancelar");
+
+        document.getElementById("btn-excluir-serie-toda").addEventListener("click", handlerToda);
+        document.getElementById("btn-excluir-serie-uma").addEventListener("click", handlerUma);
+        document.getElementById("btn-excluir-serie-cancelar").addEventListener("click", handlerCancelar);
+    });
+}
+
 async function excluirCompromisso(id) {
     const compromisso = compromissosCache.find((c) => c.id === id);
 
     if (compromisso && compromisso.serie_id) {
-        const excluirSerie = confirm(
-            "Este compromisso faz parte de uma repetição.\n\n" +
-            "OK = excluir a série inteira\n" +
-            "Cancelar = excluir só esta data"
-        );
+        const escolha = await perguntarExclusaoSerie();
+        if (escolha === "cancelar") return;
 
-        if (excluirSerie) {
+        if (escolha === "toda") {
             const { error } = await supabaseClient
                 .from("compromissos")
                 .delete()
@@ -695,7 +793,7 @@ async function excluirCompromisso(id) {
             renderizarAgenda();
             return;
         }
-        // Cancelar no confirm acima cai aqui embaixo e exclui só esta data.
+        // escolha === "uma" cai aqui embaixo e exclui só esta data.
     } else {
         const confirmar = confirm("Excluir este compromisso?");
         if (!confirmar) return;
@@ -769,15 +867,21 @@ async function baixarBackup() {
     const tabelas = ["compromissos", "contatos", "pets", "cursos", "sessoes_estudo", "tarefas_semana"];
     const backup = { gerado_em: new Date().toISOString() };
 
-    for (const tabela of tabelas) {
-        const { data, error } = await supabaseClient.from(tabela).select("*");
+    // As 6 tabelas são buscadas em paralelo (em vez de uma por vez em
+    // sequência), o que reduz bastante o tempo de espera do backup.
+    const resultados = await Promise.all(
+        tabelas.map((tabela) => supabaseClient.from(tabela).select("*"))
+    );
+
+    for (let i = 0; i < tabelas.length; i++) {
+        const { data, error } = resultados[i];
         if (error) {
-            alert(`Erro ao gerar backup (tabela ${tabela}): ${error.message}`);
+            alert(`Erro ao gerar backup (tabela ${tabelas[i]}): ${error.message}`);
             btn.textContent = textoOriginal;
             btn.disabled = false;
             return;
         }
-        backup[tabela] = data;
+        backup[tabelas[i]] = data;
     }
 
     const conteudo = JSON.stringify(backup, null, 2);
