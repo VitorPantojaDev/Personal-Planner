@@ -1171,7 +1171,7 @@ const CHAVE_POPUP_PROXIMO = "popupProximoMostrado";
 
 async function verificarPopupProximoCompromisso() {
     document.body.appendChild(document.getElementById("popup-proximo"));
-    
+
     if (sessionStorage.getItem(CHAVE_POPUP_PROXIMO)) return;
 
     const agora = new Date();
@@ -1205,7 +1205,7 @@ async function verificarPopupProximoCompromisso() {
 
     document.getElementById("popup-texto").textContent =
         `${compromissoProximo.titulo} em ${minutosRestantes} minuto${minutosRestantes === 1 ? "" : "s"}`;
-    document.getElementById("popup-proximo").classList.remove("oculto");
+    document.getElementById("popup-proximo").classList.add("popup-visivel");
     sessionStorage.setItem(CHAVE_POPUP_PROXIMO, "true");
 }
 
