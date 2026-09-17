@@ -1340,3 +1340,35 @@ button:active {
     color: var(--tinta-suave);
     margin-top: 12px;
 }
+
+.popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    cursor: pointer;
+}
+
+.popup-card {
+    background: var(--tinta-suave, #fff);
+    border-left: 6px solid var(--jade, #1f5c42);
+    border-radius: 10px;
+    padding: 24px 28px;
+    max-width: 320px;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.popup-titulo {
+    font-weight: 600;
+    color: var(--jade, #1f5c42);
+    margin-bottom: 8px;
+}
+
+.popup-texto {
+    font-size: 1.05rem;
+    margin: 0;
+}

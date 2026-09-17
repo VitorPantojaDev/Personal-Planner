@@ -1164,9 +1164,58 @@ async function verificarAvisoSegundaFeira() {
 }
 
 // ---------------------------------------------------------------
+// Popup do próximo compromisso: aparece uma vez por sessão, se
+// houver um compromisso de hoje começando dentro da próxima 1 hora.
+// ---------------------------------------------------------------
+const CHAVE_POPUP_PROXIMO = "popupProximoMostrado";
+
+async function verificarPopupProximoCompromisso() {
+    if (sessionStorage.getItem(CHAVE_POPUP_PROXIMO)) return;
+
+    const agora = new Date();
+    const hojeISO = formatarDataISO(agora);
+
+    const { data, error } = await supabaseClient
+        .from("compromissos")
+        .select("titulo, hora_inicio")
+        .eq("data", hojeISO)
+        .not("hora_inicio", "is", null)
+        .order("hora_inicio", { ascending: true });
+
+    if (error || !data || data.length === 0) return;
+
+    let compromissoProximo = null;
+    let minutosRestantes = null;
+
+    for (const compromisso of data) {
+        const [h, m] = compromisso.hora_inicio.slice(0, 5).split(":").map(Number);
+        const horarioCompromisso = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate(), h, m);
+        const diferencaMin = Math.round((horarioCompromisso - agora) / 60000);
+
+        if (diferencaMin >= 0 && diferencaMin <= 60) {
+            compromissoProximo = compromisso;
+            minutosRestantes = diferencaMin;
+            break;
+        }
+    }
+
+    if (!compromissoProximo) return;
+
+    document.getElementById("popup-texto").textContent =
+        `${compromissoProximo.titulo} em ${minutosRestantes} minuto${minutosRestantes === 1 ? "" : "s"}`;
+    document.getElementById("popup-proximo").classList.remove("oculto");
+    sessionStorage.setItem(CHAVE_POPUP_PROXIMO, "true");
+}
+
+document.getElementById("popup-proximo").addEventListener("click", function () {
+    this.classList.add("oculto");
+});
+
+// ---------------------------------------------------------------
 // Primeira renderização
 // ---------------------------------------------------------------
 renderizarAgenda();
+verificarPopupProximoCompromisso();
 
 (async function iniciarTarefas() {
     await carregarTarefas();
