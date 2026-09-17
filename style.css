@@ -1360,11 +1360,11 @@ button:active {
 }
 
 .popup-card {
-    background: var(--tinta-suave, #fff);
+    background: var(--pergaminho, #fff);
     border-left: 6px solid var(--jade, #1f5c42);
     border-radius: 10px;
-    padding: 24px 28px;
-    max-width: 320px;
+    padding: 32px 36px;
+    max-width: 420px;
     text-align: center;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
 }
@@ -1372,10 +1372,11 @@ button:active {
 .popup-titulo {
     font-weight: 600;
     color: var(--jade, #1f5c42);
-    margin-bottom: 8px;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
 }
 
 .popup-texto {
-    font-size: 1.05rem;
+    font-size: 1.2rem;
     margin: 0;
 }

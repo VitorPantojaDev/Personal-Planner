@@ -1210,7 +1210,7 @@ async function verificarPopupProximoCompromisso() {
 }
 
 document.getElementById("popup-proximo").addEventListener("click", function () {
-    this.classList.add("oculto");
+    this.classList.remove("popup-visivel");
 });
 
 // ---------------------------------------------------------------
