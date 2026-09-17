@@ -1170,6 +1170,8 @@ async function verificarAvisoSegundaFeira() {
 const CHAVE_POPUP_PROXIMO = "popupProximoMostrado";
 
 async function verificarPopupProximoCompromisso() {
+    document.body.appendChild(document.getElementById("popup-proximo"));
+    
     if (sessionStorage.getItem(CHAVE_POPUP_PROXIMO)) return;
 
     const agora = new Date();
