@@ -69,7 +69,7 @@ function renderizarLista() {
 pesquisaEl.addEventListener("input", renderizarLista);
 
 listaAnotacoesEl.addEventListener("click", (evento) => {
-    const card = evento.target.closest(".card-anotacao");
+    const card = evento.target.closest(".cartao-lista");
     if (!card) return;
     const anotacao = anotacoesCache.find((a) => a.id === card.dataset.id);
     if (anotacao) abrirEditor(anotacao);
