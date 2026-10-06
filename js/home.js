@@ -222,6 +222,7 @@ function navegar(direcao) {
 // Renderização principal: decide qual visão desenhar
 // ---------------------------------------------------------------
 async function renderizarAgenda() {
+    esconderTooltipAgenda();
     document.querySelectorAll(".btn-visao").forEach((botao) => {
         botao.classList.toggle("ativo", botao.dataset.visao === visaoAtual);
     });
@@ -536,6 +537,10 @@ function mostrarTooltipAgenda(elementoReferencia, diaData, compromissosDoDia) {
 function esconderTooltipAgenda() {
     tooltipAgendaEl.classList.remove("visivel");
 }
+
+window.addEventListener("blur", esconderTooltipAgenda);
+document.addEventListener("visibilitychange", esconderTooltipAgenda);
+window.addEventListener("scroll", esconderTooltipAgenda, { passive: true });
 
 // ---------------------------------------------------------------
 // Cliques dentro da agenda (delegação de evento, já que o
