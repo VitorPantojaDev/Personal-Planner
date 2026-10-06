@@ -425,16 +425,6 @@ button:active {
     display: block;
 }
 
-.indicador-compromisso {
-    position: absolute;
-    bottom: 5px;
-    right: 5px;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--vermelhao);
-}
-
 /* ---------- Menu de navegação entre páginas ---------- */
 #menu-principal {
     display: flex;
@@ -1004,14 +994,6 @@ button:active {
     display: flex;
     justify-content: center;
     gap: 8px;
-}
-
-.link-google-agenda {
-    display: inline-block;
-    font-size: 0.8em;
-    margin-right: 8px;
-    color: var(--jade-claro);
-    text-decoration: none;
 }
 
 #google-agenda-linha {

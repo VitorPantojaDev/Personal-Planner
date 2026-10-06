@@ -64,10 +64,10 @@ function renderizarLista() {
             ? '<span class="selo-moderador">Moderador</span>'
             : "";
         return `
-            <div class="card-recado" data-id="${a.id}">
+            <div class="cartao-lista" data-id="${a.id}">
                 <strong>${escapeHtml(a.titulo)}</strong> ${seloModerador}
-                <div class="recado-preview">${escapeHtml(preview)}${(a.corpo || "").length > 80 ? "…" : ""}</div>
-                <div class="recado-data">Editado em ${dataFormatada}</div>
+                <div class="cartao-preview">${escapeHtml(preview)}${(a.corpo || "").length > 80 ? "…" : ""}</div>
+                <div class="cartao-data">Editado em ${dataFormatada}</div>
             </div>
         `;
     }).join("");
@@ -76,7 +76,7 @@ function renderizarLista() {
 pesquisaEl.addEventListener("input", renderizarLista);
 
 listaRecadosEl.addEventListener("click", (evento) => {
-    const card = evento.target.closest(".card-recado");
+    const card = evento.target.closest(".cartao-lista");
     if (!card) return;
     const recado = recadosCache.find((a) => a.id === card.dataset.id);
     if (recado) abrirEditor(recado);

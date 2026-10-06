@@ -27,13 +27,15 @@
 
     <input type="text" id="pesquisa-anotacoes" placeholder="Pesquisar anotação...">
 
+    <div id="lista-anotacoes">Carregando anotações...</div>
+
     <button type="button" id="btn-nova-anotacao">Nova anotação</button>
 
-    <div id="editor-anotacao" class="oculto">
+    <div id="editor-anotacao" class="editor-painel oculto">
         <input type="hidden" id="anotacao-id">
 
-        <input type="text" id="anotacao-titulo" placeholder="Título">
-        <textarea id="anotacao-conteudo" rows="12" placeholder="Escreva aqui..."></textarea>
+        <input type="text" id="anotacao-titulo" class="editor-titulo" placeholder="Título">
+        <textarea id="anotacao-conteudo" class="editor-conteudo" rows="12" placeholder="Escreva aqui..."></textarea>
 
         <div id="anotacao-info"></div>
 
